@@ -285,10 +285,12 @@ class MSILDowntimeService:
                 dt_item['start_time'] = dt_item['start_time'].strftime("%d-%m-%y | %I:%M:%S %p")
             if dt_item['end_time']:
                 dt_item['end_time'] = dt_item['end_time'].strftime("%d-%m-%y | %I:%M:%S %p")
-            fields = list(dt_item.values())
-            csvwriter.writerow(fields[1:])
-            rows.append(fields[1:])
-        return rows
+            # fields = list(dt_item.values())
+            # csvwriter.writerow(fields[1:])
+            # rows.append(fields[1:])
+        # return rows
+
+        return downtime_dict
 
     def get_downtime_part_filters(self, shop_id):
 
