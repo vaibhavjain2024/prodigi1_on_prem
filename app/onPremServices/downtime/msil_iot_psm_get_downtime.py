@@ -1,8 +1,8 @@
 from modules.common.logger_common import get_logger
 from fastapi import HTTPException
 from os import getenv
-import json
 
+# import json
 # from json_utils import default_format_for_json
 # from modules.IAM.authorization.psm_shop_authorizer import shop_auth
 # from modules.IAM.exceptions.forbidden_exception import ForbiddenException
