@@ -275,7 +275,7 @@ class MSILDowntimeService:
                   'Updated By']
         downtime_dict = []
         rows = []
-        csvwriter.writerow(fields)
+        # csvwriter.writerow(fields)
 
         for dt in downtimes:
             downtime_dict.append(self.model_to_dict(dt))
