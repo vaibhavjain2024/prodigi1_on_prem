@@ -84,8 +84,8 @@ async def get_plan_filters(alertfilter: getPlanFilter = Depends()):
     return returnJsonResponses(response) 
 
 
-@router.put('/plan/status')
-async def put_downtime_remark(alertfilter: getPlanFilter = Depends()):
+@router.get('/plan/status')
+async def get_plan_status(alertfilter: getPlanFilter = Depends()):
     shop_id = alertfilter.shop_id
     if not shop_id:
         raise HTTPException(status_code=400, detail="Missing 'shop_id' query parameters")
@@ -95,7 +95,7 @@ async def put_downtime_remark(alertfilter: getPlanFilter = Depends()):
 
 
 @router.get('/plan/download')
-async def get_downtime_total_duration(plandownload: planDownload = Depends()):
+async def get_plan_file_download(plandownload: planDownload = Depends()):
     shop_id = plandownload.shop_id
     shop_name = plandownload.shop_name
     date = plandownload.date
@@ -105,7 +105,7 @@ async def get_downtime_total_duration(plandownload: planDownload = Depends()):
 
 
 @router.get('/plan/upload')
-async def get_downtime_remark_list(planupload: planUpload = Depends()):
+async def get_plan_file_upload(planupload: planUpload = Depends()):
     shop_id = planupload.shop_id
     shop_name = planupload.shop_name
     
