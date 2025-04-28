@@ -6,7 +6,7 @@ import datetime
 from modules.PSM.session_helper import get_session_helper, SessionHelper
 
 # import os
-# import pytz
+import pytz
 # import boto3
 # from modules.IAM.authorization.psm_download_authorizer import psm_download
 # from modules.IAM.authorization.psm_admin_authorizer import admin
@@ -16,7 +16,8 @@ from modules.PSM.session_helper import get_session_helper, SessionHelper
 
 logger = get_logger()
 
-# ist_tz = pytz.timezone('Asia/Kolkata')
+ist_tz = pytz.timezone('Asia/Kolkata')
+
 # s3_client = s3 = boto3.client('s3')
 # bucket_name = os.environ.get("PSM_PLAN_S3_BUCKET_NAME")
 # folder = ""

@@ -2,11 +2,11 @@ from modules.common.logger_common import get_logger
 from fastapi import HTTPException
 from os import getenv
 
+import pytz
 import datetime
 from modules.PSM.session_helper import get_session_helper, SessionHelper
 
 # import os
-# import pytz
 # import boto3
 # from modules.PSM.repositories.msil_plan_file_status_repository import MSILPlanFileStatusRepository
 # from modules.PSM.services.msil_plan_file_status_service import MSILPlanFileStatusService
@@ -21,7 +21,8 @@ from modules.PSM.session_helper import get_session_helper, SessionHelper
 
 logger = get_logger()
 
-# ist_tz = pytz.timezone('Asia/Kolkata')
+ist_tz = pytz.timezone('Asia/Kolkata')
+
 # s3_client = s3 = boto3.client('s3')
 # bucket_name = os.environ.get("PSM_PLAN_S3_BUCKET_NAME")
 
