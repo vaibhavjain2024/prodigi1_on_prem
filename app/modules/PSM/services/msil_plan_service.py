@@ -172,32 +172,53 @@ class MSILPlanService(Service):
                                                  status=status, limit=10000, offset=0)
         fields = ["Machine", "Model", "Part name", "P E Code", "Production number", "Production date", "Shift",
                   "Priority", "Planned Qty", "Actual Qty", "Status"]
-
-        csvwriter.writerow(fields)
-        rows = []
+        
+        result = []
         for each in plans:
             model: MSILPlan = each[0]
             model_name = each[1]
-            if each[5]:
-                part_name = each[2] + "(" + each[5] + ")"
-            else:
-                part_name = each[2]
-            fields = [
-                each[4],
-                model_name,
-                part_name,
-                each[3],
-                model.work_order_number,
-                model.production_date,
-                model.shift,
-                model.priority,
-                model.planned_quantity,
-                each[7] or 0,
-                model.status.name
-            ]
-            csvwriter.writerow(fields)
-            rows.append(fields)
-        return rows
+            part_name = each[2] + f"({each[5]})" if each[5] else each[2]
+            result.append({
+                "Machine": each[4],
+                "Model": model_name,
+                "Part Name": part_name,
+                "PE Code": each[3],
+                "Production number": model.work_order_number,
+                "Production Date": model.production_date,
+                "Shift": model.shift,
+                "Priority": model.priority,
+                "Planned Quantity": model.planned_quantity,
+                "Actual Quantity": each[7] or 0,
+                "Status": model.status.name
+            })
+
+        return result
+
+        # csvwriter.writerow(fields)
+        # rows = []
+        # for each in plans:
+        #     model: MSILPlan = each[0]
+        #     model_name = each[1]
+        #     if each[5]:
+        #         part_name = each[2] + "(" + each[5] + ")"
+        #     else:
+        #         part_name = each[2]
+        #     fields = [
+        #         each[4],
+        #         model_name,
+        #         part_name,
+        #         each[3],
+        #         model.work_order_number,
+        #         model.production_date,
+        #         model.shift,
+        #         model.priority,
+        #         model.planned_quantity,
+        #         each[7] or 0,
+        #         model.status.name
+        #     ]
+        #     csvwriter.writerow(fields)
+        #     rows.append(fields)
+        # return rows
 
     def validate_future_dates(self, df_plan, errors):
         today = datetime.datetime.now(ist_tz).date()
