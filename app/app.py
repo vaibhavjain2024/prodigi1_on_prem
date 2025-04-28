@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from entrypoints.apis import (
-    downtimeHandler, planHandler, shopViewHandler, reworkHandler, reportsHandler, qualityHandler, test
+    downtimeHandler, planHandler, productionHandler, shopViewHandler, reworkHandler, reportsHandler, qualityHandler, test
 )
 
 app = FastAPI(
@@ -34,4 +34,5 @@ app.include_router(shopViewHandler.router, tags=["Shop View"])
 app.include_router(reworkHandler.router, tags=["ReWork"])
 app.include_router(reportsHandler.router, tags=["Reports"])
 app.include_router(qualityHandler.router, tags=["Quality Punching"])
+app.include_router(productionHandler.router, tags=["Production"])
 app.include_router(test.router, tags=["test"])
