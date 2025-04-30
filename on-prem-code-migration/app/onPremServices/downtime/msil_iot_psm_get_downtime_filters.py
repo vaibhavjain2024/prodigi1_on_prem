@@ -3,9 +3,9 @@ from os import getenv
 from modules.common.logger_common import get_logger
 
 # from json_utils import default_format_for_json
-# from modules.IAM.authorization.psm_shop_authorizer import shop_auth
-# from modules.IAM.authorization.base import authorize
-# from modules.IAM.role import get_role
+from modules.IAM.authorization.psm_shop_authorizer import shop_auth
+from modules.IAM.authorization.base import authorize
+from modules.IAM.role import get_role
 # from modules.IAM.exceptions.forbidden_exception import ForbiddenException
 
 from modules.PSM.session_helper import get_session_helper, SessionHelper
@@ -22,7 +22,7 @@ from modules.PSM.services.msil_downtime_service import MSILDowntimeService
 
 logger = get_logger()
 
-# @authorize(shop_auth)
+@authorize(shop_auth)
 def get_downtime_filters(**kwargs):
     """Get alarms 
 
@@ -84,11 +84,11 @@ def handler(shop_id):
                                         msil_shift_repository)
     
     tenant = "MSIL"
-    username = "MSIL"
+    username = "dilpreet"
 
-    # role = get_role(username,rbac_session)
+    role = get_role(username,rbac_session)
 
     return get_downtime_filters(service=msil_downtime_service, 
                                         # username=username, 
-                                        # role=role,s
-                                        shop_id=shop_id)
+                                        role=role,
+                                        shop_id=str(shop_id))

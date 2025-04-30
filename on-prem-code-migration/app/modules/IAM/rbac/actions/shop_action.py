@@ -7,6 +7,7 @@ class ShopAction(Action):
         super().__init__(ActionTypes.SHOP_ACTION)
         
     def is_permitted(self, scope):
+        print("++++++++++++++++", scope[Scopes.ALLOWED_SHOP_IDS], self.scope[Scopes.ALLOWED_SHOP_IDS])
         if( self.scope[Scopes.ALLOWED_SHOP_IDS] == ["*"] \
             or scope[Scopes.ALLOWED_SHOP_IDS] in self.scope[Scopes.ALLOWED_SHOP_IDS] ) :
             return True

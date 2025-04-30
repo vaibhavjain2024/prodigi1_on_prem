@@ -11,7 +11,7 @@ import pytz
 # from modules.IAM.authorization.psm_download_authorizer import psm_download
 # from modules.IAM.authorization.psm_admin_authorizer import admin
 # from modules.IAM.authorization.base import authorize
-# from modules.IAM.role import get_role
+from modules.IAM.role import get_role
 # from modules.IAM.exceptions.forbidden_exception import ForbiddenException
 
 logger = get_logger()
@@ -56,9 +56,10 @@ def handler(shop_id, shop_name, date_str=None):
     rbac_session = SessionHelper(PLATFORM_CONNECTION_STRING).get_session()  
         
     tenant = "MSIL"
-    username = "MSIL"
+    username = "dilpreet"
 
-    # role = get_role(username,rbac_session)
+    role = get_role(username,rbac_session)
+    print(role)
 
     # query_params = event.get("queryStringParameters", {})
     # shop_id = query_params.get("shop_id")
@@ -80,6 +81,14 @@ def handler(shop_id, shop_name, date_str=None):
             current_ist_time = date_obj.strftime("%d%m%y")
 
         file_name = f"{shop_name}_{current_ist_time}.xlsx"
+
+        return {
+            "statusCode": 200,
+            "body": {
+                "file_name": file_name,
+                "url": f"https://{shop_name}.s3.ap-south-1.amazonaws.com/{file_name}"
+            }
+        }
 
         # plan_url = s3_client.generate_presigned_url(
         #     ClientMethod='get_object', 

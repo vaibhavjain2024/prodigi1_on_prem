@@ -43,7 +43,8 @@ class SessionHelper:
     def get_session(self):
         Session = sessionmaker(bind=self.engine)
         session = Session()
-        # session = get_session(session, self.engine)
+        
+        session = get_session(session, self.engine)
         return session
 
     def close(self):

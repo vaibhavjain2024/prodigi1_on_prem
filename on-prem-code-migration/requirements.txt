@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+motor
+pydantic[email]
+python-dotenv
+pytz
+pyjwt
+python-jose
+requests
+httpx
+prometheus_fastapi_instrumentator
+sqlalchemy
+pandas
+openpyxl
+psycopg2

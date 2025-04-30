@@ -1,0 +1,60 @@
+version: '3.3'
+
+services:
+  # PostgreSQL service
+  postgres:
+    image: postgres:15
+    container_name: postgres-db
+    restart: always
+    ports:
+      - "5432:5432" 
+    environment:
+      POSTGRES_USER: postgres  
+      POSTGRES_PASSWORD: msiliotplatform
+      POSTGRES_DB: msil-iot-digiprod-db 
+    volumes:
+      - postgres-data:/var/lib/postgresql/data 
+    networks:
+      - my-network
+
+  # PostgreSQL service for platform
+  platform-postgres:
+    image: postgres:15
+    container_name: platform-postgres-db
+    restart: always
+    ports:
+      - "5433:5432"  # Expose this database on a different port
+    environment:
+      POSTGRES_USER: postgres  
+      POSTGRES_PASSWORD: msiliotplatform
+      POSTGRES_DB: platform-db
+    volumes:
+      - platform-postgres-data:/var/lib/postgresql/data
+    networks:
+      - my-network
+
+  on-prem-code-migration:
+    build:
+      context: ./on-prem-code-migration  # Path to the service directory
+      dockerfile: Dockerfile
+    container_name: on-prem-code-migration
+    volumes:
+      - /home/ubuntu/prodigi1/prodigi1-cloud-code:/prodigi1-cloud-code  # Host to container volume mapping
+    ports:
+      - "8000:8000"
+    restart: always
+    networks:
+      - my-network
+    environment:
+      - ENV=local  # Set the environment variable here
+
+
+# Define a custom network
+networks:
+  my-network:
+    driver: bridge
+
+# Define a volume for PostgreSQL data persistence
+volumes:
+  postgres-data:
+  platform-postgres-data:
