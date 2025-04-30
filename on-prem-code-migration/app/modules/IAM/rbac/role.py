@@ -68,12 +68,15 @@ class Role(object):
             self.add_permissions_to_role(user_permissions,True)
                   
     def check_permission(self,resource_name, action, scope=""):
+        print("************", self.permissions)
         #Check if role has any permission for the resource 
         if self.permissions.__contains__(resource_name) is False:
+            print("=============")
             return False
         
         try:
             permission = self.permissions[resource_name]
+            print(")))))))))))))))))))))))", permission)
             #Check if role has any permission for the action 
             return permission.check_permission(action_name=action,scope=scope)
         except :

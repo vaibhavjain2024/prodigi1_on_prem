@@ -11,5 +11,7 @@ class PermissionMetadata(Base):
     resource = Column(String)
     action = Column(String)
     scope = Column(JSONB)
-    
+    action_type = Column(String)
+    display_name = Column(String)
+    module_id = Column(Integer)
  

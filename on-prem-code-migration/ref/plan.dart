@@ -25,14 +25,14 @@
             "routeName" : "pressShop/plan/download",
             "lambdaName": "msil-iot-psm-get-psm-signed-url-to-download-plan-file",
             "methodType":["GET"]
-        },
+        } --> Open,
         {
             "httpApiGatewayName": "msil-iot-pressshop-apis",
             "httpAuthorizerName":"pressShopCognitoAuthorizer",
             "routeName" : "pressShop/plan/upload",
             "lambdaName": "msil-iot-psm-get-psm-signed-url-to-upload-plan-file",
             "methodType":["GET"]
-        },
+        } --> Open,
         {
             "httpApiGatewayName": "msil-iot-pressshop-apis",
             "httpAuthorizerName":"pressShopCognitoAuthorizer",

@@ -36,9 +36,9 @@ class getPlanFilter(BaseModel):
 class planDownload(BaseModel):
     shop_id: int = Field(..., description="The ID of the shop")
     shop_name: Optional[str] = Field(None, description="The name of the shop")
-    date: Optional[str] = Field(None, regex=r"^\d{4}-\d{2}-\d{2}$", description="The date in YYYY-MM-DD format")
+    date: Optional[str] = None
 
 
 class planUpload(BaseModel):
     shop_id: int = Field(..., description="The ID of the shop")
-    shop_name: Optional[str] = Field(None, description="The name of the shop")
+    shop_name: Optional[str] = None

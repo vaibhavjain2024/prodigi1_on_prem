@@ -20,6 +20,7 @@ class Permission(object):
         return self.actions
     
     def check_permission(self, action_name, scope):
+        print("-----------", self.actions[action_name])
         return self.actions[action_name].is_permitted(scope=scope)
     
     def check_role_permission(self, action_name, scope):
