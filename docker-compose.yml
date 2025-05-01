@@ -38,16 +38,30 @@ services:
       context: ./on-prem-code-migration  # Path to the service directory
       dockerfile: Dockerfile
     container_name: on-prem-code-migration
-    volumes:
-      - /home/ubuntu/prodigi1/prodigi1-cloud-code:/prodigi1-cloud-code  # Host to container volume mapping
     ports:
       - "8000:8000"
     restart: always
     networks:
       - my-network
+    volumes:
+      - ./modules:/app/modules
     environment:
       - ENV=local  # Set the environment variable here
 
+  user-auth-service:
+    build:
+      context: ./user-auth-service  # Path to the service directory
+      dockerfile: Dockerfile
+    container_name: user-auth-service-prodigi1
+    ports:
+      - "8001:8001"
+    restart: always
+    networks:
+      - my-network
+    volumes:
+      - ./modules:/app/modules
+    environment:
+      - ENV=local  # Set the environment variable here
 
 # Define a custom network
 networks:
