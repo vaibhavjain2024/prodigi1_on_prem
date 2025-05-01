@@ -4,7 +4,7 @@ import io
 from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
 
-from utils.logger import get_logger
+from app.utils.logger import get_logger
 logger = get_logger("testlog", "testendpointlogs")
 
 

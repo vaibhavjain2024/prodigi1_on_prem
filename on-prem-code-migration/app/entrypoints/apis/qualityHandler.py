@@ -5,12 +5,12 @@ from fastapi.responses import StreamingResponse, JSONResponse
 from io import StringIO
 from csv import DictWriter
 
-from schema.qualityPunchingSchema import (
+from app.schema.qualityPunchingSchema import (
     getQuality, getQualityFilter,
     qualityPunching, updateQualityPunching
 )
 
-from onPremServices.qualityPunching import (
+from app.onPremServices.qualityPunching import (
     msil_iot_psm_get_quality_punching, msil_iot_psm_get_quality_punching_filters,
     msil_iot_psm_quality_reason_list, msil_iot_psm_get_quality_punching_records,
     msil_iot_psm_quality_punching_submission, msil_iot_psm_quality_punching_records_update,

@@ -1,6 +1,6 @@
 from modules.common.logger_common import get_logger
 from fastapi import HTTPException
-from os import getenv
+from app.config.config import PSM_CONNECTION_STRING, PLATFORM_CONNECTION_STRING
 
 import pytz
 import datetime
@@ -45,9 +45,6 @@ def handler(shop_id, shop_name):
     # elif(env == "staging"):
     #     connection_string_env_variable = "CONNECTION_STRING_STAGING"
     #     rbac_connection_string = "RBAC_CONNECTION_STRING_STAGING"
-    
-    PSM_CONNECTION_STRING = getenv('PSM_CONNECTION_STRING')
-    # PLATFORM_CONNECTION_STRING = getenv('PLATFORM_CONNECTION_STRING')
 
     # session_helper = get_session_helper(PSM_CONNECTION_STRING, PSM_CONNECTION_STRING)
     # session = session_helper.get_session()

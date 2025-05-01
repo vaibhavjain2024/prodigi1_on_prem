@@ -5,12 +5,12 @@ from fastapi.responses import StreamingResponse, JSONResponse
 from io import StringIO
 from csv import DictWriter
 
-from schema.reworkSchema import (
+from app.schema.reworkSchema import (
     getQuality, reworkTotal, getReport,
     addRecord, updateRecord, getRecord
 )
 
-from onPremServices.reWork import (
+from app.onPremServices.reWork import (
     msil_iot_psm_get_quality_updation, msil_iot_psm_quality_updation_records_update,
     msil_iot_psm_quality_updation_submission, msil_iot_psm_quality_updation_total_rework_qty,
     msil_iot_psm_get_quality_updation_records, msil_iot_psm_get_quality_updation_report

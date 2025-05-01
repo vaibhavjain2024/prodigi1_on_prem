@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 
-from os import getenv
+from app.config.config import PSM_CONNECTION_STRING, PLATFORM_CONNECTION_STRING
 from modules.common.logger_common import get_logger
 
 
@@ -24,10 +24,6 @@ from modules.PSM.services.msil_quality_punching_service import MSILQualityPunchi
 logger = get_logger()
 
 def handler(punching_id):
-
-    PSM_CONNECTION_STRING = getenv('PSM_CONNECTION_STRING')
-    PLATFORM_CONNECTION_STRING = getenv('PLATFORM_CONNECTION_STRING')
-
     # session_helper = get_session_helper(PSM_CONNECTION_STRING, PSM_CONNECTION_STRING)
     # session = session_helper.get_session()
 

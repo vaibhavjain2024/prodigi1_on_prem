@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 
-from os import getenv
+from app.config.config import PSM_CONNECTION_STRING, PLATFORM_CONNECTION_STRING
 from modules.common.logger_common import get_logger
 # from metrics_logger import log_metrics_to_cloudwatch
 # from json_utils import default_format_for_json
@@ -32,9 +32,6 @@ logger = get_logger()
 #     return wrapper
 
 def handler(shop_id, **query_params):
-
-    PSM_CONNECTION_STRING = getenv('PSM_CONNECTION_STRING')
-    # PLATFORM_CONNECTION_STRING = getenv('PLATFORM_CONNECTION_STRING')
 
     # session_helper = get_session_helper(PSM_CONNECTION_STRING, PSM_CONNECTION_STRING)
     # session = session_helper.get_session()

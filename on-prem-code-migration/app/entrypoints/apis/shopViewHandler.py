@@ -5,13 +5,13 @@ from fastapi.responses import StreamingResponse, JSONResponse
 from io import StringIO
 from csv import DictWriter
 
-from schema.shopViewSchema import (
+from app.schema.shopViewSchema import (
     shopView, shopViewGraph, shopViewReport, 
     machineView, machineViewGraph, 
     uniquePartsCount, topBreakDown
 )
 
-from onPremServices.shopView import (
+from app.onPremServices.shopView import (
     msil_iot_psm_get_shop_view, msil_iot_psm_get_shop_view_graph, msil_iot_psm_get_shop_view_report,
     msil_iot_psm_get_machine_view, msil_iot_psm_get_machine_trend_graph,
     msil_iot_psm_unique_parts_count, msil_iot_psm_top_downtime_reasons

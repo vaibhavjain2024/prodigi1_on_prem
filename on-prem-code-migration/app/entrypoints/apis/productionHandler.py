@@ -5,7 +5,7 @@ from fastapi.responses import StreamingResponse, JSONResponse
 from io import StringIO
 from csv import DictWriter
 
-from schema.productionSchema import (
+from app.schema.productionSchema import (
     getProduction,
     UpdateVariantRequest,
     getProductionFilter,
@@ -13,7 +13,7 @@ from schema.productionSchema import (
     ShopIdSchema
 )
 
-from onPremServices.production import (
+from app.onPremServices.production import (
     msil_iot_psm_get_production,
     msil_iot_psm_quality_production_start,
     msil_iot_psm_get_production_part_data,

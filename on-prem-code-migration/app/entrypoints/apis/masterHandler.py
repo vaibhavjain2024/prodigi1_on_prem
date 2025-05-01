@@ -2,9 +2,9 @@ from fastapi import Depends, HTTPException
 from fastapi.routing import APIRouter
 from fastapi.responses import JSONResponse
 
-from schema.masterSchema import getMasters
+from app.schema.masterSchema import getMasters
 
-from onPremServices.master import msil_iot_psm_master_file_details
+from app.onPremServices.master import msil_iot_psm_master_file_details
 
 router = APIRouter(prefix="/pressShop/master")
 
