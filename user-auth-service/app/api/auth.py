@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Header, Request, HTTPException
 from datetime import datetime, timedelta, timezone
-from shared.IAM.repositories.user_repository import UserRepository
-from shared.IAM.services.user_service import UserService
+from modules.IAM.repositories.user_repository import UserRepository
+from modules.IAM.services.user_service import UserService
 from app.auth.jwt_handler import create_access_token, create_refresh_token, decode_jwt_token
 from app.auth.ldap_auth import authenticate_ldap, reset_password_ldap
 from app.repository.auth_token_repository import AuthTokenRepository

@@ -21,7 +21,7 @@ COPY . .
 COPY .env.* ./
 
 # Define PYTHONPATH explicitly and add the shared directory
-ENV PYTHONPATH="/app:/app/shared"
+ENV PYTHONPATH="/app:/app/modules"
 
 # Expose the port FastAPI will run on
 EXPOSE 8001
