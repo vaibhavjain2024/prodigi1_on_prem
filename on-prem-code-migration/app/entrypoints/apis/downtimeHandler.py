@@ -5,14 +5,14 @@ from fastapi.responses import StreamingResponse, JSONResponse
 from io import StringIO
 from csv import DictWriter
 
-from schema.downtimeSchema import (
+from app.schema.downtimeSchema import (
     getDowntime,
     getDowntimeFilter,
     getDowntimeReport,
     updateDowntimeRemark
 )
 
-from onPremServices.downtime import (
+from app.onPremServices.downtime import (
     msil_iot_psm_downtime_remark_list,
     msil_iot_psm_downtime_remark_update,
     msil_iot_psm_get_downtime_filters,

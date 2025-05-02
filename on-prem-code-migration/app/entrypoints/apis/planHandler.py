@@ -5,7 +5,7 @@ from fastapi.responses import StreamingResponse, JSONResponse
 from io import StringIO
 from csv import DictWriter
 
-from schema.planSchema import (
+from app.schema.planSchema import (
     getPlan,
     getPlanFilter,
     getPlanReport,
@@ -13,7 +13,7 @@ from schema.planSchema import (
     planUpload
 )
 
-from onPremServices.plan import (
+from app.onPremServices.plan import (
     msil_iot_psm_get_alerts,
     msil_iot_psm_get_file_status,
     msil_iot_psm_get_plan_filters,

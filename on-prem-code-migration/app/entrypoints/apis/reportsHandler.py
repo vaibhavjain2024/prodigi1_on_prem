@@ -7,11 +7,11 @@ from csv import DictWriter
 from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
 
-from schema.reportsSchema import (
+from app.schema.reportsSchema import (
     Reports, reportFilter
 )
 
-from onPremServices.reports import (
+from app.onPremServices.reports import (
     msil_iot_psm_get_report_filters, 
     msil_iot_psm_get_reports_downtime, msil_iot_psm_get_reports_quality, msil_iot_psm_get_reports_production,
     msil_iot_psm_get_reports_downtime_report, msil_iot_psm_get_reports_quality_report, msil_iot_psm_get_reports_production_report

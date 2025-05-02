@@ -1,15 +1,23 @@
-from os import getenv
-from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-from entrypoints.apis import (
-    downtimeHandler, planHandler, productionHandler, shopViewHandler, reworkHandler, reportsHandler, qualityHandler, test
+from app.entrypoints.apis import (
+    downtimeHandler, 
+    planHandler, 
+    productionHandler, 
+    shopViewHandler, 
+    reworkHandler, 
+    reportsHandler, 
+    qualityHandler, test
 )
+from app.config import config
 
 app = FastAPI(
     title="MSIL Press Shop OnPrem API's",
-    description="OnPrem APIs"
+    description="OnPrem APIs",
+    version="0.1.0",
+    docs_url=f"{config.ROUTE_PREFIX}/docs",  # Change swagger docs URL
+    redoc_url=f"{config.ROUTE_PREFIX}/redoc",  # Change redoc URL
+    openapi_url=f"{config.ROUTE_PREFIX}/openapi.json"
 )
 
 app.add_middleware(
@@ -22,8 +30,7 @@ app.add_middleware(
 
 
 def appStartUpHandler():
-    load_dotenv()
-    if None in (getenv('PSM_CONNECTION_STRING'), getenv('PLATFORM_CONNECTION_STRING')):
+    if None in [config.PSM_CONNECTION_STRING, config.PLATFORM_CONNECTION_STRING]:
         raise ValueError("Missing DB connection strings in the .env file.")
 
 app.add_event_handler("startup", appStartUpHandler)
