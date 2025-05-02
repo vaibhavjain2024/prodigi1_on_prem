@@ -7,10 +7,10 @@ from app.config.config import PSM_CONNECTION_STRING, PLATFORM_CONNECTION_STRING
 # import uuid
 # import json
 # import boto3
-# from modules.IAM.authorization.psm_download_authorizer import psm_download
 # from modules.IAM.exceptions.forbidden_exception import ForbiddenException
-# from modules.IAM.authorization.base import authorize
-# from modules.IAM.role import get_role
+from modules.IAM.authorization.psm_download_authorizer import psm_download
+from modules.IAM.authorization.base import authorize
+from modules.IAM.role import get_role
 
 from modules.PSM.session_helper import get_session_helper, SessionHelper
 from modules.PSM.repositories.msil_part_repository import MSILPartRepository
@@ -46,7 +46,7 @@ logger = get_logger()
 
 #     return report_name
 
-# @conditional_authorize
+@authorize(psm_download)
 def get_plans(**kwargs):
     """Get plans 
 
@@ -148,7 +148,7 @@ def get_plans(**kwargs):
             }
         )
 
-def handler(shop_id, **query_params):
+def handler(shop_id, request, **query_params):
     """Lambda handler to get the latest dimensions trends.
     """    
     # session_helper = get_session_helper(PSM_CONNECTION_STRING, PSM_CONNECTION_STRING)
@@ -176,15 +176,15 @@ def handler(shop_id, **query_params):
                                         msil_model_repository,
                                         msil_shift_repository)
     
-    tenant = "MSIL"
-    username = "MSIL"
+    tenant = request.state.tenant
+    username = request.state.username
 
-    # role = get_role(username,rbac_session)
+    role = get_role(username,rbac_session)
 
     return get_plans(service=msil_downtime_service,
                      query_params=query_params,
-                    #  username=username,
-                    #  role=role, 
+                     username=username,
+                     role=role, 
                      shop_id=shop_id
                      )
     

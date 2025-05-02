@@ -6,11 +6,10 @@ from modules.common.logger_common import get_logger
 
 # from metrics_logger import log_metrics_to_cloudwatch
 # from json_utils import default_format_for_json
-# from IAM.authorization.psm_shop_authorizer import shop_auth
-# from IAM.exceptions.forbidden_exception import ForbiddenException
-# from IAM.authorization.base import authorize
-
-# from modules.IAM.role import get_role
+# from modules.IAM.exceptions.forbidden_exception import ForbiddenException
+from modules.IAM.authorization.psm_shop_authorizer import shop_auth
+from modules.IAM.authorization.base import authorize
+from modules.IAM.role import get_role
 
 from modules.PSM.session_helper import get_session_helper, SessionHelper
 # from modules.PSM.repositories.msil_part_repository import MSILPartRepository
@@ -31,7 +30,7 @@ from modules.PSM.services.msil_report_quality_service import MSILReportQualitySe
 logger = get_logger()
 
 
-def handler(shop_id, start_date, end_date, **query_params):
+def handler(shop_id, start_date, end_date, request, **query_params):
 
     # session_helper = get_session_helper(PSM_CONNECTION_STRING, PSM_CONNECTION_STRING)
     # session = session_helper.get_session()
@@ -41,28 +40,28 @@ def handler(shop_id, start_date, end_date, **query_params):
     # rbac_session_helper = get_session_helper(PLATFORM_CONNECTION_STRING, PLATFORM_CONNECTION_STRING)
     # rbac_session = rbac_session_helper.get_session()
 
-    # rbac_session = SessionHelper(PLATFORM_CONNECTION_STRING).get_session()
+    rbac_session = SessionHelper(PLATFORM_CONNECTION_STRING).get_session()
 
     report_quality_repository = MSILReportQualityRepository(session)
     report_quality_service = MSILReportQualityService(report_quality_repository)
 
-    # tenant = "MSIL"
-    # username = "MSIL"
+    tenant = request.state.tenant
+    username = request.state.username
 
-    # role = get_role(username,rbac_session)
+    role = get_role(username, rbac_session)
 
     return get_reports_quality(
         service=report_quality_service, 
         query_params=query_params,
-        # username=username, 
-        # role=role,
+        username=username, 
+        role=role,
         shop_id=shop_id,
         start_date=start_date,
         end_date = end_date
     )
 
 
-# @authorize(shop_auth)
+@authorize(shop_auth)
 def get_reports_quality(**kwargs):
     """Get plans 
 

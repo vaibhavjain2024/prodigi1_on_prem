@@ -18,6 +18,9 @@ LOG_GROUP_NAME="/aws/lambda/msil-iot-prodigi1-on-prem-logs"
 IS_LOG_SEND_TO_CW = os.getenv("IS_LOG_SEND_TO_CW",False)
 SERVICE_NAME = "prodigi1-on-prem-service"
 
-# Mongo DB connection
+# API URL'S
+VERIFY_AUTH_URL = os.getenv('VERIFY_AUTH_URL', 'http://user-auth-service-prodigi1:8001/local/prodigi1/user/verify/token')
+
+# Postgres DB connection
 PSM_CONNECTION_STRING = os.getenv("PSM_CONNECTION_STRING")
 PLATFORM_CONNECTION_STRING = os.getenv("PLATFORM_CONNECTION_STRING")

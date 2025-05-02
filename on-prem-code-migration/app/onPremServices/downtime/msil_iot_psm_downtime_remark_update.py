@@ -4,10 +4,10 @@ from app.config.config import PSM_CONNECTION_STRING, PLATFORM_CONNECTION_STRING
 import datetime
 
 # from json_utils import default_format_for_json
-# from modules.IAM.authorization.psm_shop_authorizer import shop_auth
 # from modules.IAM.exceptions.forbidden_exception import ForbiddenException
-# from modules.IAM.authorization.base import authorize
-# from modules.IAM.role import get_role
+from modules.IAM.authorization.psm_shop_authorizer import shop_auth
+from modules.IAM.authorization.base import authorize
+from modules.IAM.role import get_role
 
 from modules.PSM.session_helper import get_session_helper, SessionHelper
 from modules.PSM.repositories.msil_part_repository import MSILPartRepository
@@ -32,7 +32,7 @@ logger = get_logger()
 #     if isinstance(obj, (datetime.date, datetime.datetime)):
 #         return obj.isoformat()
     
-# @authorize(shop_auth)
+@authorize(shop_auth)
 def get_downtime_remark_status(**kwargs):
     """Get alarms 
 
@@ -71,7 +71,7 @@ def get_downtime_remark_status(**kwargs):
             }
         )
 
-def handler(shop_id, id, remarks, comment):
+def handler(shop_id, id, remarks, comment, request):
     """Lambda handler to get the latest dimensions trends.
     """    
     # session_helper = get_session_helper(PSM_CONNECTION_STRING, PSM_CONNECTION_STRING)
@@ -99,10 +99,11 @@ def handler(shop_id, id, remarks, comment):
                                         msil_model_repository,
                                         msil_shift_repository)
     
-    tenant = "MSIL"
-    username = "MSIL"
+    tenant = request.state.tenant
+    username = request.state.username
 
-    # role = get_role(username,rbac_session)
+    role = get_role(username,rbac_session)
+
     # username = query_params.get("username")
     # print(username)
     # date = query_params.get("date",None)
@@ -113,6 +114,6 @@ def handler(shop_id, id, remarks, comment):
                                       comment=comment,
                                       username=username,
                                       shop_id=shop_id, 
-                                    #   role=role
+                                      role=role
                                     )
     

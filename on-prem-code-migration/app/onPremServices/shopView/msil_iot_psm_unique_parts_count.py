@@ -7,7 +7,6 @@ from modules.common.logger_common import get_logger
 # from json_utils import default_format_for_json
 # from IAM.exceptions.forbidden_exception import ForbiddenException
 
-
 from modules.PSM.session_helper import get_session_helper, SessionHelper
 from modules.PSM.repositories.msil_plan_repository import MSILPlanRepository
 from modules.PSM.services.dashboard_service import MSILDashboardService
@@ -20,7 +19,7 @@ from datetime import datetime
 logger = get_logger()
 
 
-def handler(shop_id):
+def handler(shop_id, request):
 
     # session_helper = get_session_helper(PSM_CONNECTION_STRING, PSM_CONNECTION_STRING)
     # session = session_helper.get_session()
@@ -28,6 +27,8 @@ def handler(shop_id):
 
     # rbac_session_helper = get_session_helper(PLATFORM_CONNECTION_STRING, PLATFORM_CONNECTION_STRING)
     # rbac_session = rbac_session_helper.get_session()
+
+    # rbac_session = SessionHelper(PLATFORM_CONNECTION_STRING).get_session()
 
     msil_telemetry_repo = MSILTelemetryRepository(session)
     quality_punching_repo = MSILQualityPunchingRepository(session)

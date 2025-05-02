@@ -5,10 +5,10 @@ from app.config.config import PSM_CONNECTION_STRING, PLATFORM_CONNECTION_STRING
 # import json
 # import sys
 # from json_utils import default_format_for_json
-# from modules.IAM.authorization.psm_shop_authorizer import shop_auth
 # from modules.IAM.exceptions.forbidden_exception import ForbiddenException
-# from modules.IAM.authorization.base import authorize
-# from modules.IAM.role import get_role
+from modules.IAM.authorization.psm_shop_authorizer import shop_auth
+from modules.IAM.authorization.base import authorize
+from modules.IAM.role import get_role
 
 from modules.PSM.session_helper import get_session_helper, SessionHelper
 from modules.PSM.repositories.msil_plan_file_status_repository import MSILPlanFileStatusRepository
@@ -33,7 +33,7 @@ logger = get_logger()
 #     if isinstance(obj, (datetime.date, datetime.datetime)):
 #         return obj.isoformat()
     
-# @authorize(shop_auth)
+@authorize(shop_auth)
 def get_status(**kwargs):
     """Get alarms 
 
@@ -63,7 +63,7 @@ def get_status(**kwargs):
             }
         )
 
-def handler(shop_id):
+def handler(shop_id, request):
     """Lambda handler to get the latest dimensions trends.
     """    
     # session_helper = get_session_helper(PSM_CONNECTION_STRING, PSM_CONNECTION_STRING)
@@ -74,20 +74,21 @@ def handler(shop_id):
     # rbac_session_helper = get_session_helper(PLATFORM_CONNECTION_STRING, PLATFORM_CONNECTION_STRING)
     # rbac_session = rbac_session_helper.get_session()
 
-    # rbac_session = SessionHelper(PLATFORM_CONNECTION_STRING).get_session()  
+    rbac_session = SessionHelper(PLATFORM_CONNECTION_STRING).get_session()  
     
     status_repository = MSILPlanFileStatusRepository(session)
     status_service = MSILPlanFileStatusService(status_repository)
     
-    tenant = "MSIL"
-    username = "MSIL"
+    tenant = request.state.tenant
+    username = request.state.username
 
-    # role = get_role(username,rbac_session)
+    role = get_role(username,rbac_session)
     # date = query_params.get("date",None)
 
     return get_status(service=status_service, 
                       shop_id=shop_id, 
                     #   date=date, 
-                    #   role=role
+                      username=username, 
+                      role=role
                       )
     

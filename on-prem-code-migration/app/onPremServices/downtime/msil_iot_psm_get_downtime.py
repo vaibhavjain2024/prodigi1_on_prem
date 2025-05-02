@@ -4,10 +4,10 @@ from app.config.config import PSM_CONNECTION_STRING, PLATFORM_CONNECTION_STRING
 
 # import json
 # from json_utils import default_format_for_json
-# from modules.IAM.authorization.psm_shop_authorizer import shop_auth
 # from modules.IAM.exceptions.forbidden_exception import ForbiddenException
-# from modules.IAM.authorization.base import authorize
-# from modules.IAM.role import get_role
+from modules.IAM.authorization.psm_shop_authorizer import shop_auth
+from modules.IAM.authorization.base import authorize
+from modules.IAM.role import get_role
 # from functools import wraps
 
 from modules.PSM.session_helper import get_session_helper, SessionHelper
@@ -32,7 +32,7 @@ logger = get_logger()
 #     return wrapper
 
     
-# @conditional_authorize
+@authorize(shop_auth)
 def get_downtime(**kwargs):
     """Get downtime 
 
@@ -108,7 +108,7 @@ def get_downtime(**kwargs):
             }
         )
 
-def handler(shop_id, page_no, page_size, **query_params):
+def handler(shop_id, page_no, page_size, request, **query_params):
     """Lambda handler to get the latest dimensions trends.
     """    
     # session_helper = get_session_helper(PSM_CONNECTION_STRING, PSM_CONNECTION_STRING)
@@ -136,15 +136,15 @@ def handler(shop_id, page_no, page_size, **query_params):
                                         msil_model_repository,
                                         msil_shift_repository)
     
-    tenant = "MSIL"
-    username = "MSIL"
+    tenant = request.state.tenant
+    username = request.state.username
 
-    # role = get_role(username,rbac_session)
+    role = get_role(username,rbac_session)
 
     return get_downtime(service=msil_downtime_service, 
                         query_params=query_params,
-                        # username=username,
-                        # role=role, 
+                        username=username,
+                        role=role,
                         shop_id=shop_id,
                         page_no=page_no,
                         page_size = page_size

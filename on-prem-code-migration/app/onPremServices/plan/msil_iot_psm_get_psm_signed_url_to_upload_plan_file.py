@@ -13,11 +13,11 @@ from modules.PSM.session_helper import get_session_helper, SessionHelper
 # from modules.PSM.repositories.models.msil_plan_file_status import MSILPlanFileStatus, PlanFileStatusEnum
 # from modules.PSM.repositories.msil_alert_repository import MSILAlertRepository
 # from modules.PSM.repositories.models.msil_alert_notification import AlertNotification
-# from modules.IAM.authorization.psm_shop_authorizer import shop_auth
 # from modules.IAM.authorization.psm_admin_authorizer import admin
-# from modules.IAM.authorization.base import authorize
-# from modules.IAM.role import get_role
 # from modules.IAM.exceptions.forbidden_exception import ForbiddenException
+from modules.IAM.authorization.psm_shop_authorizer import shop_auth
+from modules.IAM.authorization.base import authorize
+from modules.IAM.role import get_role
 
 logger = get_logger()
 
@@ -26,7 +26,7 @@ ist_tz = pytz.timezone('Asia/Kolkata')
 # s3_client = s3 = boto3.client('s3')
 # bucket_name = os.environ.get("PSM_PLAN_S3_BUCKET_NAME")
 
-def handler(shop_id, shop_name):
+def handler(shop_id, shop_name, request):
     """Lambda handler to provide the presigned url to upload the master file to S3.
     """    
     # stage_variables = event.get("stageVariables",{})
@@ -54,15 +54,15 @@ def handler(shop_id, shop_name):
     # rbac_session_helper = get_session_helper(PLATFORM_CONNECTION_STRING, PLATFORM_CONNECTION_STRING)
     # rbac_session = rbac_session_helper.get_session()
 
-    # rbac_session = SessionHelper(PLATFORM_CONNECTION_STRING).get_session()  
+    rbac_session = SessionHelper(PLATFORM_CONNECTION_STRING).get_session()  
 
     # msil_planfilestatus_repository = MSILPlanFileStatusRepository(session)
     # msil_alert_repository = MSILAlertRepository(session)
         
-    tenant = "MSIL"
-    username = "MSIL"
+    tenant = request.state.tenant
+    username = request.state.username
 
-    # role = get_role(username,rbac_session)
+    role = get_role(username,rbac_session)
 
     # query_params = event.get("queryStringParameters", {})
     # shop_id = query_params.get("shop_id")
@@ -70,11 +70,17 @@ def handler(shop_id, shop_name):
     # if None in (shop_id, shop_name) or shop_name == '' or shop_id == '':
     #     return aws_helper.lambda_response(status_code = 400, data={},msg="Error, shop_id/shop_name is not provided.")
 
-    # try:
-    #     shop_auth(role=role, shop_id=shop_id)
-    #     # admin(role=role)
-    # except ForbiddenException:
-    #     return aws_helper.lambda_response(status_code = 403, data={},msg="Forbidden, shop not accessible")
+    try:
+        shop_auth(role=role, shop_id=shop_id)
+        # admin(role=role)
+    except Exception as e:
+        logger.error("Forbidden, shop not accessible", exc_info=True)
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "error": str(e)
+            }
+        )
     
     try:
         current_ist_time = datetime.datetime.now(ist_tz).strftime("%d%m%y")
