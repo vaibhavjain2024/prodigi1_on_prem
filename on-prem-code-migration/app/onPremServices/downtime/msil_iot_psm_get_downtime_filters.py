@@ -3,10 +3,10 @@ from app.config.config import PSM_CONNECTION_STRING, PLATFORM_CONNECTION_STRING
 from modules.common.logger_common import get_logger
 
 # from json_utils import default_format_for_json
+# from modules.IAM.exceptions.forbidden_exception import ForbiddenException
 from modules.IAM.authorization.psm_shop_authorizer import shop_auth
 from modules.IAM.authorization.base import authorize
 from modules.IAM.role import get_role
-# from modules.IAM.exceptions.forbidden_exception import ForbiddenException
 
 from modules.PSM.session_helper import get_session_helper, SessionHelper
 from modules.PSM.repositories.msil_downtime_repository import MSILDowntimeRepository
@@ -52,7 +52,7 @@ def get_downtime_filters(**kwargs):
             }
         )
 
-def handler(shop_id):
+def handler(shop_id, request):
     """Lambda handler to get the latest dimensions trends.
     """    
     # session_helper = get_session_helper(PSM_CONNECTION_STRING, PSM_CONNECTION_STRING)
@@ -80,12 +80,12 @@ def handler(shop_id):
                                         msil_model_repository,
                                         msil_shift_repository)
     
-    tenant = "MSIL"
-    username = "dilpreet"
+    tenant = request.state.tenant
+    username = request.state.username
 
     role = get_role(username,rbac_session)
 
     return get_downtime_filters(service=msil_downtime_service, 
-                                        # username=username, 
+                                        username=username, 
                                         role=role,
                                         shop_id=str(shop_id))

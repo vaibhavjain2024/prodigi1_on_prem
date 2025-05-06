@@ -8,7 +8,6 @@ from modules.common.logger_common import get_logger
 # from json_utils import default_format_for_json
 # from IAM.exceptions.forbidden_exception import ForbiddenException
 
-
 from modules.PSM.session_helper import get_session_helper, SessionHelper
 from modules.PSM.repositories.msil_downtime_repository import MSILDowntimeRepository
 from modules.PSM.repositories.msil_downtime_reason_repository import MSILDowntimeReasonRepository
@@ -22,11 +21,12 @@ from modules.PSM.services.msil_downtime_service import MSILDowntimeService
 
 logger = get_logger()
 
-def handler(shop_id, **query_params):
+def handler(shop_id, request, **query_params):
 
     # session_helper = get_session_helper(PSM_CONNECTION_STRING, PSM_CONNECTION_STRING)
     # session = session_helper.get_session()
     session = SessionHelper(PSM_CONNECTION_STRING).get_session()
+    # rbac_session = SessionHelper(PLATFORM_CONNECTION_STRING).get_session()
 
     msil_downtime_repo = MSILDowntimeRepository(session)
     msil_downtime_reason = MSILDowntimeReasonRepository(session)

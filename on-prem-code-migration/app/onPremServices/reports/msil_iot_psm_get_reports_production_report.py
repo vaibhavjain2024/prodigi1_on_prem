@@ -6,11 +6,11 @@ from modules.common.logger_common import get_logger
 
 # from metrics_logger import log_metrics_to_cloudwatch
 # from json_utils import default_format_for_json
-# from IAM.authorization.psm_download_authorizer import psm_download
-# from IAM.exceptions.forbidden_exception import ForbiddenException
-# from IAM.authorization.base import authorize
-
+# from modules.IAM.exceptions.forbidden_exception import ForbiddenException
+from modules.IAM.authorization.psm_download_authorizer import psm_download
+from modules.IAM.authorization.base import authorize
 from modules.IAM.role import get_role
+
 from modules.PSM.session_helper import get_session_helper, SessionHelper
 from modules.PSM.repositories.msil_telemetry_repository import MSILTelemetryRepository
 from modules.PSM.repositories.msil_shift_repository import MSILShiftRepository
@@ -30,14 +30,10 @@ logger = get_logger()
     
 # def upload_to_s3():
 #     report_name = "Production_report_" + str(uuid.uuid4()) + ".xlsx"
-    
 #     s3_client.upload_file(Filename=temp_file_path, Bucket=bucket_name, Key=folder+report_name)
-
 #     return report_name
 
-
-
-def handler(shop_id, start_date, end_date, **query_params):
+def handler(shop_id, start_date, end_date, request, **query_params):
 
     # session_helper = get_session_helper(PSM_CONNECTION_STRING, PSM_CONNECTION_STRING)
     # session = session_helper.get_session()
@@ -53,23 +49,22 @@ def handler(shop_id, start_date, end_date, **query_params):
     msil_shift_repository = MSILShiftRepository(rbac_session)
     report_production_service = MSILTelemetryService(report_production_repository,msil_shift_repository)
 
-    tenant = "MSIL"
-    username = "MSIL"
+    tenant = request.state.tenant
+    username = request.state.username
 
-    # role = get_role(username,rbac_session)
+    role = get_role(username,rbac_session)
 
     return get_reports_production(
         service=report_production_service, 
         query_params=query_params,
         username=username, 
-        # role=role,
+        role=role,
         shop_id=shop_id,
         start_date=start_date,
         end_date = end_date
     )
 
-
-# @authorize(psm_download)
+@authorize(psm_download)
 def get_reports_production(**kwargs):
     """Get reports 
 

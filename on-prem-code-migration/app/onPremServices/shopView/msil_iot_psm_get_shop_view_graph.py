@@ -2,14 +2,12 @@ from fastapi import HTTPException
 
 from app.config.config import PSM_CONNECTION_STRING, PLATFORM_CONNECTION_STRING
 from modules.common.logger_common import get_logger
+
 # from metrics_logger import log_metrics_to_cloudwatch
 # from json_utils import default_format_for_json
-
-
-# from IAM.authorization.psm_shop_authorizer import shop_auth
-# from IAM.exceptions.forbidden_exception import ForbiddenException
-# from IAM.authorization.base import authorize
-
+# from modules.IAM.exceptions.forbidden_exception import ForbiddenException
+from modules.IAM.authorization.psm_shop_authorizer import shop_auth
+from modules.IAM.authorization.base import authorize
 from modules.IAM.role import get_role
 
 from modules.PSM.session_helper import get_session_helper, SessionHelper
@@ -19,7 +17,7 @@ from modules.PSM.services.msil_equipment_service import MSILEquipmentService
 logger = get_logger()
 
 
-def handler(shop_id, **query_params):
+def handler(shop_id, request, **query_params):
 
     # session_helper = get_session_helper(PSM_CONNECTION_STRING, PSM_CONNECTION_STRING)
     # session = session_helper.get_session()
@@ -36,19 +34,18 @@ def handler(shop_id, **query_params):
 
     msil_equipment_service = MSILEquipmentService(msil_equipment_repository,msil_shift_repository)
 
-    tenant = "MSIL"
-    username = "MSIL"
+    tenant = request.state.tenant
+    username = request.state.username
 
-    # role = get_role(username,rbac_session)
+    role = get_role(username,rbac_session)
 
     return shop_view_graph(
         service=msil_equipment_service, 
         query_params=query_params,
         username=username, 
-        # role=role,
+        role=role,
         shop_id=shop_id
     )
-
 
 
 def shop_view_graph(**kwargs):

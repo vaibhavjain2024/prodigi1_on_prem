@@ -6,12 +6,11 @@ from modules.common.logger_common import get_logger
 
 # from metrics_logger import log_metrics_to_cloudwatch
 # # from json_utils import default_format_for_json
-# from IAM.authorization.psm_shop_authorizer import shop_auth
-# from IAM.exceptions.forbidden_exception import ForbiddenException
-# from IAM.authorization.base import authorize
+# from modules.IAM.exceptions.forbidden_exception import ForbiddenException
+from modules.IAM.authorization.psm_shop_authorizer import shop_auth
+from modules.IAM.authorization.base import authorize
+from modules.IAM.role import get_role
 
-
-# from modules.IAM.role import get_role
 from modules.PSM.repositories.msil_quality_punching_repository import MSILQualityPunchingRepository
 from modules.PSM.repositories.msil_quality_updation_repository import MSILQualityUpdationRepository
 from modules.PSM.services.msil_quality_punching_service import MSILQualityPunchingService
@@ -41,7 +40,7 @@ logger = get_logger()
 #     if isinstance(obj, (datetime.date, datetime.datetime)):
 #         return obj.isoformat()
 
-def handler(punching_id):
+def handler(punching_id, request):
     # session_helper = get_session_helper(PSM_CONNECTION_STRING, PSM_CONNECTION_STRING)
     # session = session_helper.get_session()
 
@@ -50,6 +49,8 @@ def handler(punching_id):
     # rbac_session_helper = get_session_helper(PLATFORM_CONNECTION_STRING, PLATFORM_CONNECTION_STRING)
     # rbac_session = rbac_session_helper.get_session()
 
+    rbac_session = SessionHelper(PLATFORM_CONNECTION_STRING).get_session()
+
     msil_part_repository = MSILPartRepository(session)
     msil_equipment_repository = MSILEquipmentRepository(session)
     msil_model_repository = MSILModelRepository(session)
@@ -57,20 +58,20 @@ def handler(punching_id):
     quality_update_repo = MSILQualityUpdationRepository(session)
     quality_punching_service = MSILQualityPunchingService(quality_punching_repo, msil_equipment_repository, msil_part_repository, msil_model_repository,quality_update_repo)
 
-    tenant = "MSIL"
-    username = "MSIL"
+    tenant = request.state.tenant
+    username = request.state.username
 
-    # role = get_role(username,rbac_session)
+    role = get_role(username,rbac_session)
 
     return submit_quality_punching(
         service=quality_punching_service, 
         username=username, 
-        # role=role,
+        role=role,
         punching_id=punching_id
     )
 
     
-# @authorize(shop_auth)
+@authorize(shop_auth)
 def submit_quality_punching(**kwargs):
     """Get alarms 
 

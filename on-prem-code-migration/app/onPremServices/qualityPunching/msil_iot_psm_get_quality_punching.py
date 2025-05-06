@@ -5,10 +5,9 @@ from modules.common.logger_common import get_logger
 
 # from metrics_logger import log_metrics_to_cloudwatch
 # from json_utils import default_format_for_json
-# from IAM.authorization.psm_shop_authorizer import shop_auth
-# from IAM.exceptions.forbidden_exception import ForbiddenException
-# from IAM.authorization.base import authorize
-
+# from modules.IAM.exceptions.forbidden_exception import ForbiddenException
+from modules.IAM.authorization.psm_shop_authorizer import shop_auth
+from modules.IAM.authorization.base import authorize
 from modules.IAM.role import get_role
 
 from modules.PSM.session_helper import get_session_helper, SessionHelper
@@ -35,7 +34,7 @@ logger = get_logger()
 
 
 
-def handler(shop_id, page_no, page_size, **query_params):
+def handler(shop_id, page_no, page_size, request, **query_params):
     # session_helper = get_session_helper(PSM_CONNECTION_STRING, PSM_CONNECTION_STRING)
     # session = session_helper.get_session()
     
@@ -44,7 +43,7 @@ def handler(shop_id, page_no, page_size, **query_params):
     # rbac_session_helper = get_session_helper(PLATFORM_CONNECTION_STRING, PLATFORM_CONNECTION_STRING)
     # rbac_session = rbac_session_helper.get_session()
 
-    # rbac_session = SessionHelper(PLATFORM_CONNECTION_STRING).get_session()
+    rbac_session = SessionHelper(PLATFORM_CONNECTION_STRING).get_session()
 
     msil_part_repository = MSILPartRepository(session)
     msil_equipment_repository = MSILEquipmentRepository(session)
@@ -59,25 +58,22 @@ def handler(shop_id, page_no, page_size, **query_params):
         msil_model_repository,quality_update_repo
     )
 
-    tenant = "MSIL"
-    username = "MSIL"
+    tenant = request.state.tenant
+    username = request.state.username
 
-    # role = get_role(username,rbac_session)
+    role = get_role(username,rbac_session)
 
     return get_plans(
         service=msil_quality_punching_service, 
         query_params=query_params,
-        # username=username, 
-        # role=role,
+        username=username, 
+        role=role,
         shop_id=shop_id,
         page_no=page_no,
         page_size = page_size
     )
 
-
-
-
-# @conditional_authorize
+@authorize(shop_auth)
 def get_plans(**kwargs):
     """Get plans 
 
@@ -127,9 +123,6 @@ def get_plans(**kwargs):
             page_size=page_size
         )
        
-
-        
-
         # return {
         #     'statusCode': 200,
         #     'body': json.dumps(response,

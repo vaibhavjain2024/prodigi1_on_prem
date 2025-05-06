@@ -10,10 +10,10 @@ from app.config.config import PSM_CONNECTION_STRING, PLATFORM_CONNECTION_STRING
 # import sys
 # import datetime
 # from json_utils import default_format_for_json
-# from modules.IAM.authorization.psm_download_authorizer import psm_download
 # from modules.IAM.exceptions.forbidden_exception import ForbiddenException
-# from modules.IAM.authorization.base import authorize
-# from modules.IAM.role import get_role
+from modules.IAM.authorization.psm_download_authorizer import psm_download
+from modules.IAM.authorization.base import authorize
+from modules.IAM.role import get_role
 
 from modules.PSM.session_helper import get_session_helper, SessionHelper
 from modules.PSM.repositories.msil_part_repository import MSILPartRepository
@@ -49,7 +49,7 @@ logger = get_logger()
 
 #     return report_name
 
-# @conditional_authorize
+@authorize(psm_download)
 def get_plans(**kwargs):
     """Get plans 
 
@@ -132,7 +132,7 @@ def get_plans(**kwargs):
             }
         )
     
-def handler(shop_id, **query_params):
+def handler(shop_id, request, **query_params):
     """Lambda handler to get the latest dimensions trends.
     """ 
     # session_helper = get_session_helper(PSM_CONNECTION_STRING, PSM_CONNECTION_STRING)
@@ -143,7 +143,7 @@ def handler(shop_id, **query_params):
     # rbac_session_helper = get_session_helper(PLATFORM_CONNECTION_STRING, PLATFORM_CONNECTION_STRING)
     # rbac_session = rbac_session_helper.get_session()
 
-    # rbac_session = SessionHelper(PLATFORM_CONNECTION_STRING).get_session()  
+    rbac_session = SessionHelper(PLATFORM_CONNECTION_STRING).get_session()  
     
     msil_part_repository = MSILPartRepository(session)
     msil_equipment_repository = MSILEquipmentRepository(session)
@@ -160,14 +160,14 @@ def handler(shop_id, **query_params):
                                         msil_alert_repository,
                                         msil_plan_file_status_repository)
     
-    tenant = "MSIL"
-    username = "MSIL"
+    tenant = request.state.tenant
+    username = request.state.username
 
-    # role = get_role(username,rbac_session)
+    role = get_role(username,rbac_session)
 
     return get_plans(service=msil_plan_service, 
                      query_params=query_params, 
-                    #  username=username, 
-                    #  role=role,
+                     username=username, 
+                     role=role,
                      shop_id=shop_id
                      )

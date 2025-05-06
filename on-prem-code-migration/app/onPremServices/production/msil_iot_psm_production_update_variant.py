@@ -6,10 +6,10 @@ from app.config.config import PSM_CONNECTION_STRING, PLATFORM_CONNECTION_STRING
 # import sys
 # import datetime
 # from json_utils import default_format_for_json
-# from modules.IAM.authorization.psm_shop_authorizer import shop_auth
 # from modules.IAM.exceptions.forbidden_exception import ForbiddenException
-# from modules.IAM.authorization.base import authorize
-# from modules.IAM.role import get_role
+from modules.IAM.authorization.psm_shop_authorizer import shop_auth
+from modules.IAM.authorization.base import authorize
+from modules.IAM.role import get_role
 
 from modules.PSM.session_helper import get_session_helper, SessionHelper
 from modules.PSM.services.msil_recipe_service import MSILRecipeService
@@ -52,7 +52,7 @@ def update_variant(**kwargs):
             }
         )
 
-def handler(**body):
+def handler(request, **body):
     """Lambda handler to get the latest dimensions trends.
     """ 
     # session_helper = get_session_helper(PSM_CONNECTION_STRING, PSM_CONNECTION_STRING)
@@ -69,17 +69,17 @@ def handler(**body):
     msil_shift_repository = MSILShiftRepository(rbac_session)
     msil_production_service = MSILProductionService(msil_production_repository,msil_shift_repository)
     
-    tenant = "MSIL"
-    username = "MSIL"
+    tenant = request.state.tenant
+    username = request.state.username
 
-    # role = get_role(username,rbac_session)
+    role = get_role(username,rbac_session)
 
     # body = json.loads(event.get('body'))
     shop_id = body['shop_id']
 
     return update_variant(service=msil_production_service, 
                           body=body, 
-                        #  role=role, 
-                        #  username=username,
+                          role=role, 
+                          username=username,
                           shop_id=shop_id,
                          )

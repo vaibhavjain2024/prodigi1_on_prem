@@ -6,10 +6,10 @@ from app.config.config import PSM_CONNECTION_STRING, PLATFORM_CONNECTION_STRING
 # import sys
 # import datetime
 # from json_utils import default_format_for_json
-# from modules.IAM.authorization.psm_shop_authorizer import shop_auth
 # from modules.IAM.exceptions.forbidden_exception import ForbiddenException
-# from modules.IAM.authorization.base import authorize
-# from modules.IAM.role import get_role
+from modules.IAM.authorization.psm_shop_authorizer import shop_auth
+from modules.IAM.authorization.base import authorize
+from modules.IAM.role import get_role
 
 from modules.PSM.session_helper import get_session_helper, SessionHelper
 from modules.PSM.repositories.msil_production_repository import MSILProductionRepository
@@ -18,7 +18,7 @@ from modules.PSM.services.msil_production_service import MSILProductionService
 
 logger = get_logger()
     
-# @authorize(shop_auth)
+@authorize(shop_auth)
 def get_production_part_data(**kwargs):
     """Get plans 
 
@@ -49,7 +49,7 @@ def get_production_part_data(**kwargs):
             }
         )
 
-def handler(shop_id, **query_params):
+def handler(shop_id, request, **query_params):
     """Lambda handler to get the latest dimensions trends.
     """ 
     # session_helper = get_session_helper(PSM_CONNECTION_STRING, PSM_CONNECTION_STRING)
@@ -66,14 +66,14 @@ def handler(shop_id, **query_params):
     msil_shift_repository = MSILShiftRepository(rbac_session)
     msil_production_service = MSILProductionService(msil_production_repository,msil_shift_repository)
     
-    tenant = "MSIL"
-    username = "MSIL"
+    tenant = request.state.tenant
+    username = request.state.username
 
-    # role = get_role(username,rbac_session)
+    role = get_role(username,rbac_session)
 
     return get_production_part_data(service=msil_production_service, 
                                     query_params=query_params, 
-                                    # username=username,
-                                    # role=role,
+                                    username=username,
+                                    role=role,
                                     shop_id=shop_id
                                     )

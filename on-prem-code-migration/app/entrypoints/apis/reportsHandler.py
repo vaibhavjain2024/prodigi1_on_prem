@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException
+from fastapi import Request, Depends, HTTPException
 from fastapi.routing import APIRouter
 from fastapi.responses import StreamingResponse, JSONResponse
 
@@ -16,6 +16,8 @@ from app.onPremServices.reports import (
     msil_iot_psm_get_reports_downtime, msil_iot_psm_get_reports_quality, msil_iot_psm_get_reports_production,
     msil_iot_psm_get_reports_downtime_report, msil_iot_psm_get_reports_quality_report, msil_iot_psm_get_reports_production_report
 )
+from app.utils.auth_utility import jwt_required
+
 
 def generate_excel(data_dict):
     # Create a workbook
@@ -61,16 +63,18 @@ def returnJsonResponse(response):
     return JSONResponse(content=response, status_code=200)
 
 @router.get("/filters")
-def report_Filter(reportfilter: reportFilter = Depends()):
+@jwt_required
+def report_Filter(request: Request, reportfilter: reportFilter = Depends()):
     shop_id = reportfilter.shop_id
     if not shop_id:
         raise HTTPException(status_code=400, detail="Missing 'shop_id' query parameter")
     
-    response = msil_iot_psm_get_report_filters.handler(shop_id)
+    response = msil_iot_psm_get_report_filters.handler(shop_id, request)
     return returnJsonResponse(response)
 
 @router.get("/downtime")
-def get_Downtime(reports: Reports = Depends()):
+@jwt_required
+def get_Downtime(request: Request, reports: Reports = Depends()):
     shop_id = reports.shop_id
     start_date = reports.start_date
     end_date = reports.end_date
@@ -78,11 +82,12 @@ def get_Downtime(reports: Reports = Depends()):
         raise HTTPException(status_code=400, detail="Missing 'shop_id' / 'start_date' / 'end_date' query parameter")
 
     query_params = reports.model_dump(exclude={"shop_id", "start_date", "end_date"}, exclude_none=True)
-    response = msil_iot_psm_get_reports_downtime.handler(shop_id, start_date, end_date, **query_params)
+    response = msil_iot_psm_get_reports_downtime.handler(shop_id, start_date, end_date, request, **query_params)
     return returnJsonResponse(response)
 
 @router.get("/quality")
-def get_Quality(reports: Reports = Depends()):
+@jwt_required
+def get_Quality(request: Request, reports: Reports = Depends()):
     shop_id = reports.shop_id
     start_date = reports.start_date
     end_date = reports.end_date
@@ -90,11 +95,12 @@ def get_Quality(reports: Reports = Depends()):
         raise HTTPException(status_code=400, detail="Missing 'shop_id' / 'start_date' / 'end_date' query parameter")
 
     query_params = reports.model_dump(exclude={"shop_id", "start_date", "end_date"}, exclude_none=True)
-    response = msil_iot_psm_get_reports_quality.handler(shop_id, start_date, end_date, **query_params)
+    response = msil_iot_psm_get_reports_quality.handler(shop_id, start_date, end_date, request, **query_params)
     return returnJsonResponse(response)
 
 @router.get("/production")
-def get_Production(reports: Reports = Depends()):
+@jwt_required
+def get_Production(request: Request, reports: Reports = Depends()):
     shop_id = reports.shop_id
     start_date = reports.start_date
     end_date = reports.end_date
@@ -102,13 +108,12 @@ def get_Production(reports: Reports = Depends()):
         raise HTTPException(status_code=400, detail="Missing 'shop_id' / 'start_date' / 'end_date' query parameter")
 
     query_params = reports.model_dump(exclude={"shop_id", "start_date", "end_date"}, exclude_none=True)
-    response = msil_iot_psm_get_reports_production.handler(shop_id, start_date, end_date, **query_params)
+    response = msil_iot_psm_get_reports_production.handler(shop_id, start_date, end_date, request, **query_params)
     return returnJsonResponse(response)
 
-
-
 @router.get("/downtime/report")
-def get_Downtime_Reports(reports: Reports = Depends()):
+@jwt_required
+def get_Downtime_Reports(request: Request, reports: Reports = Depends()):
     shop_id = reports.shop_id
     start_date = reports.start_date
     end_date = reports.end_date
@@ -116,7 +121,7 @@ def get_Downtime_Reports(reports: Reports = Depends()):
         raise HTTPException(status_code=400, detail="Missing 'shop_id' / 'start_date' / 'end_date' query parameter")
 
     query_params = reports.model_dump(exclude={"shop_id", "start_date", "end_date"}, exclude_none=True)
-    response = msil_iot_psm_get_reports_downtime_report.handler(shop_id, start_date, end_date, **query_params)
+    response = msil_iot_psm_get_reports_downtime_report.handler(shop_id, start_date, end_date, request, **query_params)
 
     result = StringIO()
     fieldnames = response[0].keys()
@@ -130,7 +135,8 @@ def get_Downtime_Reports(reports: Reports = Depends()):
     return StreamingResponse(result, media_type="text/csv", headers={"Content-Disposition": "attachment; filename=downtime_report.csv"})
 
 @router.get("/quality/report")
-def get_Quality_Reports(reports: Reports = Depends()):
+@jwt_required
+def get_Quality_Reports(request: Request, reports: Reports = Depends()):
     shop_id = reports.shop_id
     start_date = reports.start_date
     end_date = reports.end_date
@@ -138,7 +144,7 @@ def get_Quality_Reports(reports: Reports = Depends()):
         raise HTTPException(status_code=400, detail="Missing 'shop_id' / 'start_date' / 'end_date' query parameter")
 
     query_params = reports.model_dump(exclude={"shop_id", "start_date", "end_date"}, exclude_none=True)
-    response = msil_iot_psm_get_reports_quality_report.handler(shop_id, start_date, end_date, **query_params)
+    response = msil_iot_psm_get_reports_quality_report.handler(shop_id, start_date, end_date, request, **query_params)
 
     result = StringIO()
     fieldnames = response[0].keys()
@@ -152,7 +158,8 @@ def get_Quality_Reports(reports: Reports = Depends()):
     return StreamingResponse(result, media_type="text/csv", headers={"Content-Disposition": "attachment; filename=quality_report.csv"})
 
 @router.get("/production/report")
-def get_Production_Reports(reports: Reports = Depends()):
+@jwt_required
+def get_Production_Reports(request: Request, reports: Reports = Depends()):
     shop_id = reports.shop_id
     start_date = reports.start_date
     end_date = reports.end_date
@@ -160,7 +167,7 @@ def get_Production_Reports(reports: Reports = Depends()):
         raise HTTPException(status_code=400, detail="Missing 'shop_id' / 'start_date' / 'end_date' query parameter")
 
     query_params = reports.model_dump(exclude={"shop_id", "start_date", "end_date"}, exclude_none=True)
-    response = msil_iot_psm_get_reports_production_report.handler(shop_id, start_date, end_date, **query_params)
+    response = msil_iot_psm_get_reports_production_report.handler(shop_id, start_date, end_date, request, **query_params)
 
     excel_file_data = generate_excel(response)
     return StreamingResponse(

@@ -5,11 +5,9 @@ from modules.common.logger_common import get_logger
 
 # from metrics_logger import log_metrics_to_cloudwatch
 # from json_utils import default_format_for_json
-
-# from IAM.authorization.psm_shop_authorizer import shop_auth
-# from IAM.exceptions.forbidden_exception import ForbiddenException
-# from IAM.authorization.base import authorize
-
+# from modules.IAM.exceptions.forbidden_exception import ForbiddenException
+from modules.IAM.authorization.psm_shop_authorizer import shop_auth
+from modules.IAM.authorization.base import authorize
 from modules.IAM.role import get_role
 
 # from modules.PSM.repositories.msil_quality_punching_repository import MSILQualityPunchingRepository
@@ -30,19 +28,16 @@ logger = get_logger()
 
 # def default_format_for_json(obj):
 #     """Handler for dict data helps to serialize it to Json.
-
 #     This method is used to cast the dict values to isoformat if the type of value is date/datetime.
-
 #     Args:
 #         obj (any): values of dict.
-
 #     Returns:
 #         None/datetime: if obj is data/datetime then date/datetime in isoformat otherwise None.
 #     """    
 #     if isinstance(obj, (datetime.date, datetime.datetime)):
 #         return obj.isoformat()
 
-def handler(punching_id, updation_list):
+def handler(punching_id, updation_list, request):
 
     # session_helper = get_session_helper(PSM_CONNECTION_STRING, PSM_CONNECTION_STRING)
     # session = session_helper.get_session()
@@ -52,7 +47,7 @@ def handler(punching_id, updation_list):
     # rbac_session_helper = get_session_helper(PLATFORM_CONNECTION_STRING, PLATFORM_CONNECTION_STRING)
     # rbac_session = rbac_session_helper.get_session()
 
-    # rbac_session = SessionHelper(PLATFORM_CONNECTION_STRING).get_session()
+    rbac_session = SessionHelper(PLATFORM_CONNECTION_STRING).get_session()
 
     msil_part_repository = MSILPartRepository(session)
     msil_equipment_repository = MSILEquipmentRepository(session)
@@ -60,20 +55,20 @@ def handler(punching_id, updation_list):
     quality_updation_repo = MSILQualityUpdationRepository(session)
     quality_updation_service = MSILQualityUpdationService(quality_updation_repo, msil_equipment_repository, msil_part_repository, msil_model_repository)
 
-    tenant = "MSIL"
-    username = "MSIL"
+    tenant = request.state.tenant
+    username = request.state.username
 
-    # role = get_role(username,rbac_session)
+    role = get_role(username,rbac_session)
 
     return put_quality_punching_records(
         service=quality_updation_service, 
         username=username, 
-        # role=role,
+        role=role,
         punching_id=punching_id,
         updation_list=updation_list
     )
     
-# @authorize(shop_auth)
+@authorize(shop_auth)
 def put_quality_punching_records(**kwargs):
     """Get alarms 
 

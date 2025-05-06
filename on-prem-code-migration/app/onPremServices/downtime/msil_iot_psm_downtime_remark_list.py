@@ -3,10 +3,10 @@ from fastapi import HTTPException
 from app.config.config import PSM_CONNECTION_STRING, PLATFORM_CONNECTION_STRING
 
 # import json
-# from modules.IAM.authorization.psm_shop_authorizer import shop_auth
 # from modules.IAM.exceptions.forbidden_exception import ForbiddenException
-# from modules.IAM.authorization.base import authorize
-# from modules.IAM.role import get_role
+from modules.IAM.authorization.psm_shop_authorizer import shop_auth
+from modules.IAM.authorization.base import authorize
+from modules.IAM.role import get_role
 
 from modules.PSM.session_helper import get_session_helper, SessionHelper
 from modules.PSM.repositories.msil_downtime_reason_repository import MSILDowntimeReasonRepository
@@ -18,7 +18,7 @@ from modules.PSM.services.msil_downtime_remark_service import MSILDowntimeRemark
 
 logger = get_logger()
 
-# @authorize(shop_auth)
+@authorize(shop_auth)
 def get_downtime_remark_list(**kwargs):
     """Get downtime 
 
@@ -42,7 +42,7 @@ def get_downtime_remark_list(**kwargs):
         )
 
 
-def handler(shop_id):
+def handler(shop_id, request):
     """Lambda handler to get the latest dimensions trends.
     """ 
     # session_helper = get_session_helper(PSM_CONNECTION_STRING, PSM_CONNECTION_STRING)
@@ -53,7 +53,7 @@ def handler(shop_id):
     # rbac_session_helper = get_session_helper(PLATFORM_CONNECTION_STRING, PLATFORM_CONNECTION_STRING)
     # rbac_session = rbac_session_helper.get_session()
 
-    # rbac_session = SessionHelper(PLATFORM_CONNECTION_STRING).get_session()  
+    rbac_session = SessionHelper(PLATFORM_CONNECTION_STRING).get_session()  
     
     msil_reason_repository = MSILDowntimeReasonRepository(session)
     msil_remark_repository = MSILDowntimeRemarkRepository(session)
@@ -62,12 +62,13 @@ def handler(shop_id):
     msil_downtime_remark_service = MSILDowntimeRemarkService(msil_remark_repository, 
                                         msil_reason_repository)
     
-    tenant = "MSIL"
-    username = "MSIL"
+    tenant = request.state.tenant
+    username = request.state.username
 
-    # role = get_role(username,rbac_session)
+    role = get_role(username,rbac_session)
+
     return get_downtime_remark_list(service=msil_downtime_remark_service,
-                                    # username=username,
-                                    # role=role,
+                                    username=username,
+                                    role=role,
                                     shop_id=shop_id
                                     )
