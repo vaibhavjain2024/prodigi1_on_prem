@@ -1,12 +1,12 @@
-FROM python:3.11-slim
+FROM python:3.13-alpine
 
 # Set the working directory
 WORKDIR /app
 
 # Install system dependencies required for psycopg2
-RUN apt-get update && apt-get install -y \
-    libpq-dev gcc && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+# RUN apt-get update && apt-get install -y \
+#     libpq-dev gcc && \
+#     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy the requirements file
 COPY requirements.txt .

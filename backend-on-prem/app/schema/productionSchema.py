@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from typing import Optional
 
 class getProductionQuality(BaseModel):
-    shop_id: int
+    shop_id: str
     page_no: int = 1
     page_size: int = 10
     model_list: Optional[str] = None
@@ -17,22 +17,22 @@ class getProductionQuality(BaseModel):
 
 
 class UpdateVariantRequest(BaseModel):
+    shop_id: str
     production_id: int
     prev_material_code: str
     material_code: str
     part: str
-    shop_id: int
 
 
 class getProductionFilter(BaseModel):
-    shop_id: int
+    shop_id: str
     production_id: int
 
 
 class getProduction(BaseModel):
-    shop_id: int
+    shop_id: str
     equipment_id: str
 
 
 class ShopIdSchema(BaseModel):
-    shop_id: int = Field(..., description="The ID of the shop")
+    shop_id: str = Field(..., description="The ID of the shop")
