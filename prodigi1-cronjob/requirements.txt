@@ -1,0 +1,17 @@
+python-dotenv
+pytz
+pyjwt
+python-jose
+requests
+ldap3
+pydantic
+python-jose[cryptography]
+passlib
+python-dotenv
+cryptography
+pycryptodome
+httpx
+sqlalchemy
+pandas
+openpyxl
+psycopg2

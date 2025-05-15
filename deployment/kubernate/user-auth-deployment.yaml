@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-auth-deployment
+  namespace: iot-pd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-auth
+  template:
+    metadata:
+      labels:
+        app: user-auth
+    spec:
+      containers:
+      - name: user-auth
+        image: localhost:32000/user-auth-container:latest
+        ports:
+        - containerPort: 8001
+        env:
+        - name: ENV
+          value: "dev"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"

@@ -1,0 +1,4 @@
+# /etc/cron.d/cron-job
+
+# Run user-sync every 30 minutes
+*/30 * * * * root TASK_NAME=user-sync /usr/local/bin/python /pc2/app/main.py >> /var/log/cron.log 2>&1

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-on-prem-deployment
+  namespace: iot-pd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-on-prem
+  template:
+    metadata:
+      labels:
+        app: backend-on-prem
+    spec:
+      containers:
+      - name: backend-on-prem
+        image: localhost:32000/backend-on-prem-container:latest
+        ports:
+        - containerPort: 8002
+        env:
+        - name: ENV
+          value: "uat"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8002
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8002
+          initialDelaySeconds: 5
+          periodSeconds: 10
