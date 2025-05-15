@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-auth-service
+  namespace: iot-pd
+spec:
+  selector:
+    app: user-auth
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8001
+      nodePort: 30001
+  type: NodePort
+      

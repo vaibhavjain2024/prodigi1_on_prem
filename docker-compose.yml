@@ -33,28 +33,39 @@ services:
     networks:
       - my-network
 
-  on-prem-code-migration:
+  user-auth:
     build:
-      context: ./on-prem-code-migration  # Path to the service directory
+      context: ./user-auth  # Path to the service directory
       dockerfile: Dockerfile
-    container_name: on-prem-code-migration
+    container_name: user-auth-prodigi1
     ports:
-      - "8000:8000"
+      - "8001:8001"
     restart: always
     networks:
       - my-network
-    volumes:
-      - ./modules:/app/modules
+    environment:
+      - ENV=local  # Set the environment variable here
+  
+  backend-on-prem:
+    build:
+      context: ./backend-on-prem  # Path to the service directory
+      dockerfile: Dockerfile
+    container_name: backend-on-prem
+    ports:
+      - "8002:8002"
+    restart: always
+    networks:
+      - my-network
     environment:
       - ENV=local  # Set the environment variable here
 
-  user-auth-service:
+  prodigi1-batch-service:
     build:
-      context: ./user-auth-service  # Path to the service directory
+      context: ./prodigi1-batch-service  # Path to the service directory
       dockerfile: Dockerfile
-    container_name: user-auth-service-prodigi1
+    container_name: prodigi1-batch-service
     ports:
-      - "8001:8001"
+      - "8003:8003"
     restart: always
     networks:
       - my-network
