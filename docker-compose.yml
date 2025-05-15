@@ -43,9 +43,8 @@ services:
     restart: always
     networks:
       - my-network
-    
-    # environment:
-    #   - ENV=local  # Set the environment variable here
+    environment:
+      - ENV=local  # Set the environment variable here
   
   backend-on-prem:
     build:
@@ -57,7 +56,6 @@ services:
     restart: always
     networks:
       - my-network
-    
     environment:
       - ENV=local  # Set the environment variable here
 
