@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from typing import Optional
 
 class getPlan(BaseModel):
-    shop_id: int
+    shop_id: str
     page_no: int = 1
     page_size: int = 10
     model_list: Optional[str] = None
@@ -17,7 +17,7 @@ class getPlan(BaseModel):
     
 
 class getPlanReport(BaseModel):
-    shop_id: int
+    shop_id: str
     model_list: Optional[str] = None
     machine_list: Optional[str] = None
     part_name_list: Optional[str] = None
@@ -30,15 +30,15 @@ class getPlanReport(BaseModel):
 
 
 class getPlanFilter(BaseModel):
-    shop_id: int
+    shop_id: str
 
 
 class planDownload(BaseModel):
-    shop_id: int = Field(..., description="The ID of the shop")
+    shop_id: str = Field(..., description="The ID of the shop")
     shop_name: Optional[str] = Field(None, description="The name of the shop")
     date: Optional[str] = None
 
 
 class planUpload(BaseModel):
-    shop_id: int = Field(..., description="The ID of the shop")
+    shop_id: str = Field(..., description="The ID of the shop")
     shop_name: Optional[str] = None

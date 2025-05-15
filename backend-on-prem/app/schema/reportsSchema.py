@@ -2,10 +2,10 @@ from pydantic import BaseModel
 from typing import Optional
 
 class reportFilter(BaseModel):
-    shop_id: int
+    shop_id: str
 
 class Reports(BaseModel):
-    shop_id: int
+    shop_id: str
     start_date: str
     end_date: str
     model_list: Optional[str] = None

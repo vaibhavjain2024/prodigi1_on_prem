@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 class getQuality(BaseModel):
-    shop_id: int
+    shop_id: str
     page_no: int
     page_size: int
     model_list: Optional[str] = None
@@ -16,7 +16,7 @@ class getQuality(BaseModel):
     status: Optional[str] = None
 
 class getQualityReport(BaseModel):
-    shop_id: int
+    shop_id: str
     model_list: Optional[str] = None
     machine_list: Optional[str] = None
     part_name_list: Optional[str] = None
@@ -28,7 +28,7 @@ class getQualityReport(BaseModel):
     status: Optional[str] = None
 
 class getQualityFilter(BaseModel):
-    shop_id: int
+    shop_id: str
 
 class qualityPunching(BaseModel):
     punching_id: int

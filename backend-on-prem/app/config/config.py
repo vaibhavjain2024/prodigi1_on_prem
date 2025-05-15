@@ -19,7 +19,7 @@ IS_LOG_SEND_TO_CW = os.getenv("IS_LOG_SEND_TO_CW",False)
 SERVICE_NAME = "prodigi1-on-prem-service"
 
 # API URL'S
-VERIFY_AUTH_URL = os.getenv('VERIFY_AUTH_URL', 'http://user-auth-service-prodigi1:8001/dev/prodigi1/user/verify/token')
+VERIFY_AUTH_URL = os.getenv('VERIFY_AUTH_URL', 'http://10.194.51.159:30001/dev/prodigi1/user/verify/token')
 
 # Postgres DB connection
 PSM_CONNECTION_STRING = os.getenv("PSM_CONNECTION_STRING")
