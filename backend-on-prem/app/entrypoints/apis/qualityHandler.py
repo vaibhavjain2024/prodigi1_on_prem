@@ -17,11 +17,10 @@ from app.onPremServices.qualityPunching import (
     msil_iot_psm_get_quality_punching_report
 )
 from app.utils.auth_utility import jwt_required
+from app.utils.common_utility import returnJsonResponse
 
 router = APIRouter(prefix="/pressShop/quality")
 
-def returnJsonResponses(response):
-    return JSONResponse(content=response, status_code=200)
 
 @router.get('/')
 @jwt_required
@@ -35,7 +34,7 @@ async def get_quality_punching(request: Request, quality: getQuality = Depends()
 
     query_params = quality.model_dump(exclude={"shop_id", "page_no", "page_size"}, exclude_none=True)
     response = msil_iot_psm_get_quality_punching.handler(shop_id, page_no, page_size, request, **query_params)
-    return returnJsonResponses(response)
+    return returnJsonResponse(response)
 
 
 @router.get('/filters')
@@ -46,7 +45,7 @@ async def quality_punching_filters(request: Request, qualityfilter: getQualityFi
         raise HTTPException(status_code=400, detail="Missing 'shop_id' query parameters")
     
     response = msil_iot_psm_get_quality_punching_filters.handler(shop_id, request)
-    return returnJsonResponses(response) 
+    return returnJsonResponse(response) 
 
 
 @router.get('/report')
@@ -78,7 +77,7 @@ async def quality_punching_reasons(request: Request, qualityfilter: getQuality =
         raise HTTPException(status_code=400, detail="Missing 'shop_id' query parameters")
     
     response = msil_iot_psm_quality_reason_list.handler(shop_id, request)
-    return returnJsonResponses(response) 
+    return returnJsonResponse(response) 
 
 
 @router.get('/records')
@@ -90,7 +89,7 @@ async def quality_punching_records(request: Request, punching: qualityPunching =
         raise HTTPException(status_code=400, detail="Missing 'punching_id' query parameters")
     
     response = msil_iot_psm_get_quality_punching_records.handler(punching_id, request)
-    return returnJsonResponses(response) 
+    return returnJsonResponse(response) 
 
 @router.put('/punching')
 @jwt_required
@@ -102,7 +101,7 @@ async def update_punching_record(request: Request, punching: updateQualityPunchi
         raise HTTPException(status_code=400, detail="Missing 'punching_id' / 'punching_list' query parameters")
     
     response = msil_iot_psm_quality_punching_records_update.handler(punching_id, punching_list, request)
-    return returnJsonResponses(response) 
+    return returnJsonResponse(response) 
 
 @router.post('/submit')
 @jwt_required
@@ -113,4 +112,4 @@ async def submit_punching_record(request: Request, punching: qualityPunching):
         raise HTTPException(status_code=400, detail="Missing 'punching_id' query parameters")
     
     response = msil_iot_psm_quality_punching_submission.handler(punching_id, request)
-    return returnJsonResponses(response) 
+    return returnJsonResponse(response) 

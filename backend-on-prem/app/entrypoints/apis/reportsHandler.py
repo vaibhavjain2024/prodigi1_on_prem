@@ -17,6 +17,7 @@ from app.onPremServices.reports import (
     msil_iot_psm_get_reports_downtime_report, msil_iot_psm_get_reports_quality_report, msil_iot_psm_get_reports_production_report
 )
 from app.utils.auth_utility import jwt_required
+from app.utils.common_utility import returnJsonResponse
 
 
 def generate_excel(data_dict):
@@ -59,8 +60,6 @@ def generate_excel(data_dict):
 
 router = APIRouter(prefix="/pressShop/reports")
 
-def returnJsonResponse(response):
-    return JSONResponse(content=response, status_code=200)
 
 @router.get("/filters")
 @jwt_required

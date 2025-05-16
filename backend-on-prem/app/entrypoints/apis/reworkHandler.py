@@ -16,11 +16,10 @@ from app.onPremServices.reWork import (
     msil_iot_psm_get_quality_updation_records, msil_iot_psm_get_quality_updation_report
 )
 from app.utils.auth_utility import jwt_required
+from app.utils.common_utility import returnJsonResponse
 
 router = APIRouter(prefix="/pressShop/rework")
 
-def returnJsonResponse(response):
-    return JSONResponse(content=response, status_code=200)
 
 @router.get("/")
 @jwt_required
