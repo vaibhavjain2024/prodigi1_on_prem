@@ -23,11 +23,9 @@ from app.onPremServices.plan import (
     msil_iot_psm_get_psm_signed_url_to_upload_plan_file
 )
 from app.utils.auth_utility import jwt_required
+from app.utils.common_utility import returnJsonResponse
 
 router = APIRouter(prefix="/pressShop")
-
-def returnJsonResponses(response):
-    return JSONResponse(content=response, status_code=200)
 
 
 @router.get('/plan')
@@ -42,7 +40,7 @@ async def get_plan(request: Request, plan: getPlan = Depends()):
 
     query_params = plan.model_dump(exclude={"shop_id", "page_no", "page_size"}, exclude_none=True)
     response = msil_iot_psm_get_plan.handler(shop_id, page_no, page_size, request, **query_params)
-    return returnJsonResponses(response)
+    return returnJsonResponse(response)
 
 
 @router.get('/plan/report')
@@ -75,7 +73,7 @@ async def get_alerts(request: Request, alertfilter: getPlanFilter = Depends()):
         raise HTTPException(status_code=400, detail="Missing 'shop_id' query parameters")
     
     response = msil_iot_psm_get_alerts.handler(shop_id, request)
-    return returnJsonResponses(response)
+    return returnJsonResponse(response)
 
 
 @router.get('/plan/filters')
@@ -86,7 +84,7 @@ async def get_plan_filters(request: Request, alertfilter: getPlanFilter = Depend
         raise HTTPException(status_code=400, detail="Missing 'shop_id' query parameters")
     
     response = msil_iot_psm_get_plan_filters.handler(shop_id, request)
-    return returnJsonResponses(response) 
+    return returnJsonResponse(response) 
 
 
 @router.get('/plan/status')
@@ -97,7 +95,7 @@ async def get_plan_status(request: Request, alertfilter: getPlanFilter = Depends
         raise HTTPException(status_code=400, detail="Missing 'shop_id' query parameters")
 
     response = msil_iot_psm_get_file_status.handler(shop_id, request)
-    return returnJsonResponses(response) 
+    return returnJsonResponse(response) 
 
 
 @router.get('/plan/download')
@@ -108,7 +106,7 @@ async def get_plan_file_download(request: Request, plandownload: planDownload = 
     date = plandownload.date
 
     response = msil_iot_psm_get_psm_signed_url_to_download_plan_file.handler(shop_id, shop_name, date, request)
-    return returnJsonResponses(response) 
+    return returnJsonResponse(response) 
 
 
 @router.get('/plan/upload')
@@ -118,4 +116,4 @@ async def get_plan_file_upload(request: Request, planupload: planUpload = Depend
     shop_name = planupload.shop_name
     
     response = msil_iot_psm_get_psm_signed_url_to_upload_plan_file.handler(shop_id, shop_name, request)
-    return returnJsonResponses(response) 
+    return returnJsonResponse(response) 

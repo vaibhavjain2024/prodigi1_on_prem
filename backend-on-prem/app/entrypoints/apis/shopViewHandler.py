@@ -17,11 +17,10 @@ from app.onPremServices.shopView import (
     msil_iot_psm_unique_parts_count, msil_iot_psm_top_downtime_reasons
 )
 from app.utils.auth_utility import jwt_required
+from app.utils.common_utility import returnJsonResponse
 
 router = APIRouter(prefix="/pressShop/shop-view")
 
-def returnJsonResponse(response):
-    return JSONResponse(content=response, status_code=200)
 
 @router.get("/")
 @jwt_required

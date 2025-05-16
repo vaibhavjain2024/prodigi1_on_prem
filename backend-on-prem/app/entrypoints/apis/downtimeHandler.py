@@ -22,11 +22,9 @@ from app.onPremServices.downtime import (
 )
 
 from app.utils.auth_utility import jwt_required
+from app.utils.common_utility import returnJsonResponse
 
 router = APIRouter(prefix="/pressShop/downtime")
-
-def returnJsonResponses(response):
-    return JSONResponse(content=response, status_code=200)
 
 
 @router.get('/')
@@ -41,7 +39,7 @@ async def get_downtime(request: Request, downtime: getDowntime = Depends()):
 
     query_params = downtime.model_dump(exclude={"shop_id", "page_no", "page_size"}, exclude_none=True)
     response = msil_iot_psm_get_downtime.handler(shop_id, page_no, page_size, request, **query_params)
-    return returnJsonResponses(response)
+    return returnJsonResponse(response)
 
 
 @router.get('/filters')
@@ -52,7 +50,7 @@ async def get_downtime_filters(request: Request, downtimefilter: getDowntimeFilt
         raise HTTPException(status_code=400, detail="Missing 'shop_id' query parameters")
     
     response = msil_iot_psm_get_downtime_filters.handler(shop_id, request)
-    return returnJsonResponses(response) 
+    return returnJsonResponse(response) 
 
 
 @router.get('/report')
@@ -87,7 +85,7 @@ async def get_downtime_total_duration(request: Request, downtimereport: getDownt
     
     query_params = downtimereport.model_dump(exclude={"shop_id"}, exclude_none=True)
     response = msil_iot_psm_get_total_downtime.handler(shop_id, request, **query_params)
-    return returnJsonResponses(response) 
+    return returnJsonResponse(response) 
 
 
 @router.get('/remark/list')
@@ -99,7 +97,7 @@ async def get_downtime_remark_list(request: Request, downtimefilter: getDowntime
         raise HTTPException(status_code=400, detail="Missing 'shop_id' query parameters")
     
     response = msil_iot_psm_downtime_remark_list.handler(shop_id, request)
-    return returnJsonResponses(response)
+    return returnJsonResponse(response)
 
 
 @router.put('/remark/update')
@@ -114,4 +112,4 @@ async def put_downtime_remark(request: Request, downtime: updateDowntimeRemark):
         raise HTTPException(status_code=400, detail="Missing 'shop_id' / 'id' / 'remark' / 'comment' query parameters")
     
     response = msil_iot_psm_downtime_remark_update.handler(shop_id, id, remarks, comment, request)
-    return returnJsonResponses(response)
+    return returnJsonResponse(response)
