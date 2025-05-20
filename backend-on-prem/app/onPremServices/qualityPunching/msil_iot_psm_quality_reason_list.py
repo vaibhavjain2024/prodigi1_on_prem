@@ -23,7 +23,7 @@ from app.modules.PSM.session_helper import get_session_helper, SessionHelper
 logger = get_logger()
 
 
-def handler(shop_id, request):
+def handler(shop_id, request, **query_params):
     # session_helper = get_session_helper(PSM_CONNECTION_STRING, PSM_CONNECTION_STRING)
     # session = session_helper.get_session()
 
@@ -39,17 +39,33 @@ def handler(shop_id, request):
     msil_model_repository = MSILModelRepository(session)
     quality_punching_repo = MSILQualityPunchingRepository(session)
     quality_update_repo = MSILQualityUpdationRepository(session)
-    # quality_punching_service = MSILQualityPunchingService(quality_punching_repo, msil_equipment_repository, msil_part_repository, msil_model_repository,quality_update_repo)
+    quality_punching_service = MSILQualityPunchingService(
+                                    quality_punching_repo, 
+                                    msil_equipment_repository, 
+                                    msil_part_repository, 
+                                    msil_model_repository,
+                                    quality_update_repo
+                                )
 
-    quality_updation_service = MSILQualityUpdationService(quality_update_repo,msil_equipment_repository,msil_part_repository,msil_model_repository)
+    quality_updation_service = MSILQualityUpdationService(
+                                    quality_update_repo,
+                                    msil_equipment_repository,
+                                    msil_part_repository,
+                                    msil_model_repository
+                                )
+    service = quality_punching_service
 
     tenant = request.state.tenant
     username = request.state.username
 
-    role = get_role(username,rbac_session)
+    role = get_role(username, rbac_session)
+
+    for_rework = query_params.get("for_rework",'0')
+    if for_rework == "1":
+        service = quality_updation_service
 
     return get_quality_reason_list(
-        service=quality_updation_service, 
+        service=service, 
         username=username, 
         role=role,
         shop_id=shop_id

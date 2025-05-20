@@ -7,7 +7,8 @@ from csv import DictWriter
 
 from app.schema.qualityPunchingSchema import (
     getQuality, getQualityFilter,
-    qualityPunching, updateQualityPunching
+    qualityPunching, updateQualityPunching,
+    getQualityReason
 )
 
 from app.onPremServices.qualityPunching import (
@@ -70,13 +71,14 @@ async def quality_punching_report(request: Request, qualityfilter: getQualityFil
 
 @router.get('/reasons')
 @jwt_required
-async def quality_punching_reasons(request: Request, qualityfilter: getQuality = Depends()):
+async def quality_punching_reasons(request: Request, qualityfilter: getQualityReason = Depends()):
     shop_id = qualityfilter.shop_id
 
     if not shop_id:
         raise HTTPException(status_code=400, detail="Missing 'shop_id' query parameters")
     
-    response = msil_iot_psm_quality_reason_list.handler(shop_id, request)
+    query_params = qualityfilter.model_dump(exclude={"shop_id"}, exclude_none=True)
+    response = msil_iot_psm_quality_reason_list.handler(shop_id, request, **query_params)
     return returnJsonResponse(response) 
 
 
