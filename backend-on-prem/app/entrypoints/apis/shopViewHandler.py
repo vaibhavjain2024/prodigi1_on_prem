@@ -19,10 +19,10 @@ from app.onPremServices.shopView import (
 from app.utils.auth_utility import jwt_required
 from app.utils.common_utility import returnJsonResponse
 
-router = APIRouter(prefix="/pressShop/shop-view")
+router = APIRouter(prefix="/pressShop")
 
 
-@router.get("/")
+@router.get("/shop-view")
 @jwt_required
 async def get_shop_view(request: Request, shopview: shopView = Depends()):
     
@@ -35,7 +35,7 @@ async def get_shop_view(request: Request, shopview: shopView = Depends()):
     response = msil_iot_psm_get_shop_view.handler(shop_id, request, **query_params)
     return returnJsonResponse(response)
 
-@router.get("/report")
+@router.get("/shop-view/report")
 @jwt_required
 async def get_shop_view_report(request: Request, reportView: shopViewReport = Depends()):
     shop_id = reportView.shop_id
@@ -56,7 +56,7 @@ async def get_shop_view_report(request: Request, reportView: shopViewReport = De
 
     return StreamingResponse(result, media_type="text/csv", headers={"Content-Disposition": "attachment; filename=report.csv"})
 
-@router.get("/graph")
+@router.get("/shop-view/graph")
 @jwt_required
 async def get_shop_view_graph(request: Request, shopviewgraph: shopViewGraph = Depends()):
     shop_id = shopviewgraph.shop_id
@@ -67,7 +67,7 @@ async def get_shop_view_graph(request: Request, shopviewgraph: shopViewGraph = D
     response = msil_iot_psm_get_shop_view_graph.handler(shop_id, request, **query_params)
     return returnJsonResponse(response)
 
-@router.get("/uniquecounts")
+@router.get("/shop-view/uniquecounts")
 @jwt_required
 async def get_uniquePartscounts(request: Request, uniqueparts: uniquePartsCount = Depends()):
     shop_id = uniqueparts.shop_id
@@ -77,7 +77,7 @@ async def get_uniquePartscounts(request: Request, uniqueparts: uniquePartsCount 
     response = msil_iot_psm_unique_parts_count.handler(shop_id, request)
     return returnJsonResponse(response)
 
-@router.get("/topbreakdown")
+@router.get("/shop-view/topbreakdown")
 @jwt_required
 async def get_topbreakdown(request: Request, topbreakdown: topBreakDown = Depends()):
     shop_id = topbreakdown.shop_id
@@ -99,7 +99,7 @@ async def get_machines(request: Request, machineview: machineView = Depends()):
     response = msil_iot_psm_get_machine_view.handler(shop_id, request, **query_params)
     return returnJsonResponse(response)
 
-@router.get("/machine-trend")
+@router.get("/shop-view/machine-trend")
 @jwt_required
 async def get_machine_trend(request: Request, machineviewgraph: machineViewGraph = Depends()):
     shop_id = machineviewgraph.shop_id
