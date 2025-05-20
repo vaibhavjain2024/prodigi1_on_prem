@@ -10,7 +10,7 @@ from app.utils.auth_utility import jwt_required
 
 router = APIRouter(prefix="/pressShop/master")
 
-@router.get('/')
+@router.get('/details')
 @jwt_required
 async def get_masters(request: Request, getmaster: getMasters = Depends()):
     shop_id = getmaster.shop_id

@@ -30,7 +30,7 @@ def handler(shop_id, request, **query_params):
     rbac_session = SessionHelper(PLATFORM_CONNECTION_STRING).get_session()
 
     msil_equipment_repository = MSILEquipmentRepository(session)
-    msil_shift_repository = MSILShiftRepository(rbac_session)
+    msil_shift_repository = MSILShiftRepository(session)
 
     msil_equipment_service = MSILEquipmentService(msil_equipment_repository,msil_shift_repository)
 

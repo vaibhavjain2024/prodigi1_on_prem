@@ -56,7 +56,7 @@ def handler(shop_id, start_date, end_date, request, **query_params):
     rbac_session = SessionHelper(PLATFORM_CONNECTION_STRING).get_session()
 
     report_downtime_repository = MSILReportDowntimeRepository(session)
-    msil_shift_repository = MSILShiftRepository(rbac_session)
+    msil_shift_repository = MSILShiftRepository(session)
     report_downtime_service = MSILReportDowntimeService(report_downtime_repository,msil_shift_repository)
 
     tenant = request.state.tenant

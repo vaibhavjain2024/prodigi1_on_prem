@@ -46,7 +46,7 @@ def handler(shop_id, start_date, end_date, request, **query_params):
     rbac_session = SessionHelper(PLATFORM_CONNECTION_STRING).get_session()
 
     report_production_repository = MSILTelemetryRepository(session)
-    msil_shift_repository = MSILShiftRepository(rbac_session)
+    msil_shift_repository = MSILShiftRepository(session)
     report_production_service = MSILTelemetryService(report_production_repository,msil_shift_repository)
 
     tenant = request.state.tenant

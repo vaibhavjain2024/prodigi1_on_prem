@@ -63,7 +63,7 @@ router = APIRouter(prefix="/pressShop/reports")
 
 @router.get("/filters")
 @jwt_required
-def report_Filter(request: Request, reportfilter: reportFilter = Depends()):
+async def report_Filter(request: Request, reportfilter: reportFilter = Depends()):
     shop_id = reportfilter.shop_id
     if not shop_id:
         raise HTTPException(status_code=400, detail="Missing 'shop_id' query parameter")
@@ -73,7 +73,7 @@ def report_Filter(request: Request, reportfilter: reportFilter = Depends()):
 
 @router.get("/downtime")
 @jwt_required
-def get_Downtime(request: Request, reports: Reports = Depends()):
+async def get_Downtime(request: Request, reports: Reports = Depends()):
     shop_id = reports.shop_id
     start_date = reports.start_date
     end_date = reports.end_date
@@ -86,7 +86,7 @@ def get_Downtime(request: Request, reports: Reports = Depends()):
 
 @router.get("/quality")
 @jwt_required
-def get_Quality(request: Request, reports: Reports = Depends()):
+async def get_Quality(request: Request, reports: Reports = Depends()):
     shop_id = reports.shop_id
     start_date = reports.start_date
     end_date = reports.end_date
@@ -99,7 +99,7 @@ def get_Quality(request: Request, reports: Reports = Depends()):
 
 @router.get("/production")
 @jwt_required
-def get_Production(request: Request, reports: Reports = Depends()):
+async def get_Production(request: Request, reports: Reports = Depends()):
     shop_id = reports.shop_id
     start_date = reports.start_date
     end_date = reports.end_date
@@ -112,7 +112,7 @@ def get_Production(request: Request, reports: Reports = Depends()):
 
 @router.get("/downtime/report")
 @jwt_required
-def get_Downtime_Reports(request: Request, reports: Reports = Depends()):
+async def get_Downtime_Reports(request: Request, reports: Reports = Depends()):
     shop_id = reports.shop_id
     start_date = reports.start_date
     end_date = reports.end_date
@@ -135,7 +135,7 @@ def get_Downtime_Reports(request: Request, reports: Reports = Depends()):
 
 @router.get("/quality/report")
 @jwt_required
-def get_Quality_Reports(request: Request, reports: Reports = Depends()):
+async def get_Quality_Reports(request: Request, reports: Reports = Depends()):
     shop_id = reports.shop_id
     start_date = reports.start_date
     end_date = reports.end_date
@@ -158,7 +158,7 @@ def get_Quality_Reports(request: Request, reports: Reports = Depends()):
 
 @router.get("/production/report")
 @jwt_required
-def get_Production_Reports(request: Request, reports: Reports = Depends()):
+async def get_Production_Reports(request: Request, reports: Reports = Depends()):
     shop_id = reports.shop_id
     start_date = reports.start_date
     end_date = reports.end_date

@@ -66,7 +66,7 @@ def handler(request, **body):
     rbac_session = SessionHelper(PLATFORM_CONNECTION_STRING).get_session() 
     
     msil_production_repository = MSILProductionRepository(session)
-    msil_shift_repository = MSILShiftRepository(rbac_session)
+    msil_shift_repository = MSILShiftRepository(session)
     msil_production_service = MSILProductionService(msil_production_repository,msil_shift_repository)
     
     tenant = request.state.tenant
