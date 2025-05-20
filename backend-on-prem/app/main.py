@@ -7,7 +7,9 @@ from app.entrypoints.apis import (
     shopViewHandler, 
     reworkHandler, 
     reportsHandler, 
-    qualityHandler, test
+    qualityHandler, 
+    shopPlantHandler,
+    test
 )
 from app.config import config
 
@@ -42,4 +44,5 @@ app.include_router(reworkHandler.router, tags=["ReWork"])
 app.include_router(reportsHandler.router, tags=["Reports"])
 app.include_router(qualityHandler.router, tags=["Quality Punching"])
 app.include_router(productionHandler.router, tags=["Production"])
+app.include_router(shopPlantHandler.router, tags=["Platform APIs"])
 app.include_router(test.router, tags=["test"])
