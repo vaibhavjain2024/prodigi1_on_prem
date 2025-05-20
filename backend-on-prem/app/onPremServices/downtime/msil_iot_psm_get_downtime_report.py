@@ -167,7 +167,7 @@ def handler(shop_id, request, **query_params):
     msil_reason_repository = MSILDowntimeReasonRepository(session)
     msil_downtime_repository= MSILDowntimeRepository(session)
     msil_model_repository = MSILModelRepository(session)
-    msil_shift_repository = MSILShiftRepository(rbac_session)
+    msil_shift_repository = MSILShiftRepository(session)
 
     msil_downtime_service = MSILDowntimeService(msil_downtime_repository, msil_remark_repository, 
                                         msil_reason_repository,

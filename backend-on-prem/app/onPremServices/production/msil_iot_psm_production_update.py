@@ -64,7 +64,7 @@ def handler(shop_id, request, **query_params):
     
     
     msil_production_repository = MSILProductionRepository(session)
-    msil_shift_repository = MSILShiftRepository(rbac_session)
+    msil_shift_repository = MSILShiftRepository(session)
     
     msil_production_service = MSILProductionService(msil_production_repository,msil_shift_repository)
     
