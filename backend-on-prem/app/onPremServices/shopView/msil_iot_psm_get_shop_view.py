@@ -39,9 +39,9 @@ def handler(shop_id, request, **query_params):
 
     msil_equipment_repository = MSILEquipmentRepository(session)
     # print(msil_equipment_repository.get_machines_by_shop(shop_id))
-    msil_shift_repository = MSILShiftRepository(rbac_session)
+    msil_shift_repository = MSILShiftRepository(session)
 
-    msil_equipment_service = MSILEquipmentService(msil_equipment_repository,msil_shift_repository)
+    msil_equipment_service = MSILEquipmentService(msil_equipment_repository, msil_shift_repository)
 
     tenant = request.state.tenant
     username = request.state.username
@@ -70,21 +70,18 @@ def get_shop_view(**kwargs):
         username = kwargs["username"]
         shop_id = kwargs["shop_id"]
 
-        # view = query_params.get("view", None)
+        view = query_params.get("view", None)
         machine_group = query_params.get("machine_group", None)
         machine_name = query_params.get("machine_name", None)
         if machine_name:
             machine_name=machine_name.split(",")
 
-        response = service.get_shop_view(
+        return service.get_shop_view(
             shop_id,
             machine_name=machine_name,
             machine_group=machine_group,
-            # view=view
+            view=view
         )
-        print(response)
-        return json.dumps(response, default=str)
-
     except Exception as e:
         logger.error("Failed to get shop view", exc_info=True)
         raise HTTPException(
