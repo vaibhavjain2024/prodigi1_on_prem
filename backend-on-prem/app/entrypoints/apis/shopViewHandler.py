@@ -88,7 +88,7 @@ async def get_topbreakdown(request: Request, topbreakdown: topBreakDown = Depend
     response = msil_iot_psm_top_downtime_reasons.handler(shop_id, request, **query_params)
     return returnJsonResponse(response)
 
-@router.get("/machine")
+@router.get("/machines")
 @jwt_required
 async def get_machines(request: Request, machineview: machineView = Depends()):
     shop_id = machineview.shop_id
