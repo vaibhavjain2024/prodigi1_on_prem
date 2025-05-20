@@ -67,13 +67,12 @@ def get_machine_view(**kwargs):
         if machine_name:
             machine_name=machine_name.split(",")
 
-        response = service.get_machine_view(
+        return service.get_machine_view(
             shop_id,
             machine_name=machine_name,
             machine_group=machine_group,
             view=view
         )
-        return json.dumps(response, default=str)
     except Exception as e:
         logger.error("Failed to get machine view", exc_info=True)
         raise HTTPException(

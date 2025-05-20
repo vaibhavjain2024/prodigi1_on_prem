@@ -1,6 +1,7 @@
 from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse
 from datetime import datetime
+from decimal import Decimal
 
 
 def json_serialize_convert_datetime(obj):
@@ -10,6 +11,8 @@ def json_serialize_convert_datetime(obj):
         return {key: json_serialize_convert_datetime(value) for key, value in obj.items()}
     elif isinstance(obj, list):
         return [json_serialize_convert_datetime(item) for item in obj]
+    elif isinstance(obj, Decimal):
+        return float(obj)
     else:
         return obj
     

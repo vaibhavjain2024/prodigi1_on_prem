@@ -36,3 +36,7 @@ class qualityPunching(BaseModel):
 class updateQualityPunching(BaseModel):
     punching_id: int
     punching_list: list
+
+class getQualityReason(BaseModel):
+    shop_id: str
+    for_rework: Optional[str] = '0'
