@@ -17,9 +17,9 @@ class Repository():
         Returns:
             model: model 
         """
-        # with self.session() as session:       
-        #     return session.query(self.model_type).filter_by(id=m_id).first()
-        return self.session.query(self.model_type).filter_by(id=m_id).first()
+        with self.session as session:       
+            return session.query(self.model_type).filter_by(id=m_id).first()
+        # return self.session.query(self.model_type).filter_by(id=m_id).first()
 
     def get_all(self, limit=1000, offset=0):
         """Get all models from db 
@@ -28,19 +28,27 @@ class Repository():
         Returns:
             model_list: list of models
         """
-        # with self.session() as session:       
-        #     return session.query(self.model_type).limit(limit).offset(offset).all()
-        return self.session.query(self.model_type).limit(limit).offset(offset).all()
+        with self.session as session:       
+            return session.query(self.model_type).limit(limit).offset(offset).all()
+        # return self.session.query(self.model_type).limit(limit).offset(offset).all()
 
     def add(self, model):
         """Add model to db
 
         Args:
-           model : model to be added to db
+        model : model to be added to db
 
+        This function is deprecated  
+        
         Returns:
             model: model 
-        """              
+        """
+        
+        # with self.session as session:         
+        #     model = session.add(model)
+        #     session.commit()
+        #     return model
+
         model = self.session.add(model)
         self.session.commit()
         return model
@@ -48,8 +56,9 @@ class Repository():
     def update(self,id,model):
         """Commit changes to models
         """
-        self.session.query(self.model_type).filter_by(id=id).update(model)      
-        self.session.commit()
+        with self.session as session:  
+            session.query(self.model_type).filter_by(id=id).update(model)      
+            session.commit()
 
     def remove(self, m_id):
         """Remove mode from db

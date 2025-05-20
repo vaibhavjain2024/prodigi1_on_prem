@@ -102,7 +102,7 @@ async def get_downtime_remark_list(request: Request, downtimefilter: getDowntime
 
 @router.put('/remark/update')
 @jwt_required
-async def put_downtime_remark(request: Request, downtime: updateDowntimeRemark):
+async def put_downtime_remark(request: Request, downtime: updateDowntimeRemark = Depends()):
     shop_id = downtime.shop_id
     id = downtime.id
     remarks = downtime.remarks
