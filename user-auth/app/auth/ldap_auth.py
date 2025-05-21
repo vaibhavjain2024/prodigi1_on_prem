@@ -4,14 +4,16 @@ from app.utils.cloudwatch_logs import log_to_cloudwatch
 from app.utils.logger_utility import logger
 from app.utils.decrypt_pwd import AES256
 
-async def authenticate_ldap(username: str, user_password: str):
+async def authenticate_ldap(username: str, user_password: str, ldap_bind: bool):
     if not "maruti\\" in username:
         username = f"maruti\\{username}"
     log_msg = f"IS_LDAP_DISABLE  authenticate_ldap : {IS_LDAP_DISABLE} for username {username}"
     logger.info(log_msg)
+    print("****", ldap_bind)
     # log_to_cloudwatch("INFO", log_msg)
-    if IS_LDAP_DISABLE:
-        return True
+    if not bool(ldap_bind):
+        if IS_LDAP_DISABLE:
+            return True
 
     conn = None
     try:

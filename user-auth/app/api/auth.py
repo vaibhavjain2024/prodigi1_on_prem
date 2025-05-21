@@ -38,6 +38,7 @@ async def login(request: Request, body: LoginRequest):
         # log_to_cloudwatch("INFO", f"Event received at login API POST /login : {body.username}")
         user_name = body.username
         user_password = body.password
+        ldap_bind = body.ldap_bind
         platform = body.platform
         utc_login_time = datetime.now(timezone.utc)
         user_name_without_maruti_lower =  user_name.split("\\")[-1].lower()
@@ -46,7 +47,7 @@ async def login(request: Request, body: LoginRequest):
         user_repository = UserRepository(rbac_session)
         user_service = UserService(user_repository)        
 
-        is_ldap_authenticated = await authenticate_ldap(user_name, user_password)
+        is_ldap_authenticated = await authenticate_ldap(user_name, user_password, ldap_bind)
         log_message = f"Response for authenticate_ldap {is_ldap_authenticated} and Username {user_name}"
         logger.info(log_message)
         # log_to_cloudwatch("INFO", log_message)

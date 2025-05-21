@@ -26,6 +26,8 @@ def handler(module_name, request):
     tenant = request.state.tenant
     user = request.state.username
 
-    return get_all_sites_by_module(module_name = module_name,
+    response = get_all_sites_by_module(module_name = module_name,
                                     shop_service=shop_service)
+
+    return {"response": response}
    

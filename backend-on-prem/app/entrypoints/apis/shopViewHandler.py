@@ -14,7 +14,8 @@ from app.schema.shopViewSchema import (
 from app.onPremServices.shopView import (
     msil_iot_psm_get_shop_view, msil_iot_psm_get_shop_view_graph, msil_iot_psm_get_shop_view_report,
     msil_iot_psm_get_machine_view, msil_iot_psm_get_machine_trend_graph,
-    msil_iot_psm_unique_parts_count, msil_iot_psm_top_downtime_reasons
+    msil_iot_psm_unique_parts_count, msil_iot_psm_top_downtime_reasons,
+    msil_iot_psm_get_machines
 )
 from app.utils.auth_utility import jwt_required
 from app.utils.common_utility import returnJsonResponse
@@ -88,15 +89,26 @@ async def get_topbreakdown(request: Request, topbreakdown: topBreakDown = Depend
     response = msil_iot_psm_top_downtime_reasons.handler(shop_id, request, **query_params)
     return returnJsonResponse(response)
 
-@router.get("/machines")
+@router.get("/shop-view/machine")
 @jwt_required
-async def get_machines(request: Request, machineview: machineView = Depends()):
+async def get_machine(request: Request, machineview: machineView = Depends()):
     shop_id = machineview.shop_id
     if not shop_id:
         raise HTTPException(status_code=400, detail="Missing 'shop_id' query parameter")
     
     query_params = machineview.model_dump(exclude={"shop_id"}, exclude_none=True)
     response = msil_iot_psm_get_machine_view.handler(shop_id, request, **query_params)
+    return returnJsonResponse(response)
+
+@router.get("/machines")
+@jwt_required
+async def get_machines(request: Request, machineview: uniquePartsCount = Depends()):
+    shop_id = machineview.shop_id
+
+    if not shop_id:
+        raise HTTPException(status_code=400, detail="Missing 'shop_id' query parameter")
+    
+    response = msil_iot_psm_get_machines.handler(shop_id, request)
     return returnJsonResponse(response)
 
 @router.get("/shop-view/machine-trend")
