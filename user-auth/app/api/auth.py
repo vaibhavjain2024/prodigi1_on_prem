@@ -53,8 +53,8 @@ async def login(request: Request, body: LoginRequest):
         # log_to_cloudwatch("INFO", log_message)
 
         # check user in Prodigi1 user data table
-        is_user_exist_in_user_data = user_service.get_user_by_federation_identifier(user_name_without_maruti_lower)
-        log_message = f"Response: for get_user_by_username user {user_name_without_maruti_lower} "
+        is_user_exist_in_user_data = user_service.get_user_by_federation_identifier(user_name_without_maruti_lower) or user_service.get_user_by_federation_identifier("maruti\\" + user_name_without_maruti_lower) or user_service.get_user_by_federation_identifier("msil-iot_maruti\\" + user_name_without_maruti_lower)
+        log_message = f"Response: for get_user_by_username user {user_name_without_maruti_lower}"
         logger.info(log_message)
         # log_to_cloudwatch("INFO", log_message)
         if is_user_exist_in_user_data and is_ldap_authenticated:

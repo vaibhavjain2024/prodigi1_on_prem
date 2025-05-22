@@ -1,12 +1,14 @@
 from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse
-from datetime import datetime
+from datetime import datetime, date
 from decimal import Decimal
 
 
 def json_serialize_convert_datetime(obj):
     if isinstance(obj, datetime):
         return obj.isoformat()
+    elif isinstance(obj, date):
+        return obj.isoformat()  # Convert date to ISO 8601 string
     elif isinstance(obj, dict):
         return {key: json_serialize_convert_datetime(value) for key, value in obj.items()}
     elif isinstance(obj, list):
