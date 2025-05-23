@@ -2,11 +2,11 @@ from fastapi import HTTPException
 from app.config.config import PSM_CONNECTION_STRING
 
 from app.modules.PSM.session_helper import SessionHelper
-from app.modules.digiprod.services.iot_sap_logs_downtime_service import IOTSapLogsDowntimeService
+from app.modules.digiprod.services.iot_sap_logs_plan_service import IOTSapLogsPlanService
 
 
-def handler(start_time, end_time, request, **query_params):
-    """Handler function to get downtime
+def handler(scheduled_start, scheduled_finish, request, **query_params):
+    """Handler function to get plan logs
 
     Args:
         request (Request): FastAPI request object
@@ -17,11 +17,10 @@ def handler(start_time, end_time, request, **query_params):
     """
     try:
         db = SessionHelper(PSM_CONNECTION_STRING).get_session()
-
-        service = IOTSapLogsDowntimeService(db)
+        service = IOTSapLogsPlanService(db)
         query_params = query_params or {}
         response = service.fetch_all_sap_logs(
-            start_time, end_time, **query_params)
+            scheduled_start, scheduled_finish, **query_params)
         return response
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
