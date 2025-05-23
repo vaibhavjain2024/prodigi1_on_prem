@@ -17,7 +17,8 @@ async def authenticate_ldap(username: str, user_password: str, ldap_bind: bool):
 
     conn = None
     try:
-        user_password = AES256().decrypt(user_password)
+        # user_password = AES256().decrypt(user_password)
+        print("user_password *****", user_password)
         server = Server(LDAP_SERVER, get_info=ALL)
         conn = Connection(server, user=username, password=user_password, auto_bind=False)
         if conn.bind():
