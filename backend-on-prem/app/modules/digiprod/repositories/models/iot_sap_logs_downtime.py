@@ -18,6 +18,7 @@ class DowntimeSAPLogs(Base):
     data_sent_flag = Column(Enum(SAPLogStatusEnum))
     sap_plant_id = Column(Integer)
     sap_shop_id = Column(String)
+    iot_shop_id = Column(String)
     header_material = Column(String)
     program_no = Column(String)
     work_center = Column(String)

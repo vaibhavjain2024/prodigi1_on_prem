@@ -2,10 +2,10 @@ from app.modules.common.logger_common import get_logger
 from app.utils.common_utility import returnJsonResponse
 from app.utils.auth_utility import jwt_required
 from app.onPremServices.sapLogs import (
-    msil_iot_psm_get_sap_downtime
+    msil_iot_psm_get_sap_downtime, msil_iot_psm_get_sap_logs_plan
 )
 from app.schema.sapLogsSchema import (
-    DowntimeSAPLogs
+    DowntimeSAPLogs, PlanSAPLogs
 )
 from csv import DictWriter
 from datetime import datetime
@@ -123,6 +123,102 @@ async def get_sap_logs_downtime_report(request: Request, report_view: DowntimeSA
         writer = DictWriter(result, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(downtime_data)
+
+        result.seek(0)
+
+        return StreamingResponse(result, media_type="text/csv", headers={"Content-Disposition": "attachment; filename=report.csv"})
+    except Exception as e:
+        logger.error(f"Error: {str(e)}")
+        return JSONResponse(content={"error": "Internal Server Error"}, status_code=500)
+
+
+@router.get("/plan")
+@jwt_required
+async def get_sap_logs_plan(request: Request, plan: PlanSAPLogs = Depends()):
+    try:
+        scheduled_start = plan.scheduled_start
+        scheduled_finish = plan.scheduled_finish
+
+        # Convert ISO strings to datetime if needed
+        if isinstance(scheduled_start, str):
+            scheduled_start = datetime.strptime(
+                scheduled_start, DATETIME_FORMAT)
+        if isinstance(scheduled_finish, str):
+            scheduled_finish = datetime.strptime(
+                scheduled_finish, DATETIME_FORMAT)
+
+        # Validate time range
+        if scheduled_start and scheduled_finish and scheduled_start > scheduled_finish:
+            raise HTTPException(
+                status_code=400, detail="scheduled_start should be less than scheduled_finish"
+            )
+
+        # Extract filters excluding already extracted ones, scheduled_start and scheduled_finish
+        query_params = plan.model_dump(
+            exclude={"scheduled_start", "scheduled_finish"}, exclude_none=True
+        )
+
+        # Service layer handler called with filters
+        response = msil_iot_psm_get_sap_logs_plan.handler(
+            scheduled_start, scheduled_finish, request, **query_params
+        )
+
+        return returnJsonResponse(response)
+
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        logger.error("Failed to get plan", exc_info=True)
+        logger.error(f"Error: {str(e)}")
+        return JSONResponse(content={"error": "Internal Server Error"}, status_code=500)
+
+
+@router.get("/plan/report")
+@jwt_required
+async def get_sap_logs_plan_report(request: Request, plan: PlanSAPLogs = Depends()):
+    try:
+        scheduled_start = plan.scheduled_start
+        scheduled_finish = plan.scheduled_finish
+
+        # Convert ISO strings to datetime if needed
+        if isinstance(scheduled_start, str):
+            scheduled_start = datetime.strptime(
+                scheduled_start, DATETIME_FORMAT)
+        if isinstance(scheduled_finish, str):
+            scheduled_finish = datetime.strptime(
+                scheduled_finish, DATETIME_FORMAT)
+
+        # Validate time range
+        if scheduled_start and scheduled_finish and scheduled_start > scheduled_finish:
+            raise HTTPException(
+                status_code=400, detail="scheduled_start should be less than scheduled_finish"
+            )
+
+        # Extract filters excluding already extracted ones, scheduled_start and scheduled_finish
+        query_params = plan.model_dump(
+            exclude={"scheduled_start", "scheduled_finish"}, exclude_none=True
+        )
+
+        # Service layer handler called with filters
+        response = msil_iot_psm_get_sap_logs_plan.handler(
+            scheduled_start, scheduled_finish, request, **query_params
+        )
+
+        # Format the response properly
+        if isinstance(response, dict):
+            response.pop("request", None)
+
+        result = StringIO()
+        plan_data = response.get("plan", [])
+
+        # Extract keys if the first item is a dict
+        if isinstance(plan_data, list) and plan_data and isinstance(plan_data[0], dict):
+            fieldnames = plan_data[0].keys()
+            print("Extracted keys:", list(fieldnames))
+
+        writer = DictWriter(result, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(plan_data)
 
         result.seek(0)
 
