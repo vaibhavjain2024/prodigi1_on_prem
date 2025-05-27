@@ -14,6 +14,7 @@ class DowntimeSAPLogs(Base):
     __tablename__ = "iot_sap_downtime"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
+    filename = Column(String)
     data_sent_time = Column(DateTime)
     data_sent_flag = Column(Enum(SAPLogStatusEnum))
     sap_plant_id = Column(Integer)
