@@ -2,7 +2,7 @@ from app.modules.common.logger_common import get_logger
 from app.utils.common_utility import returnJsonResponse
 from app.utils.auth_utility import jwt_required
 from app.onPremServices.sapLogs import (
-    msil_iot_psm_get_sap_downtime, msil_iot_psm_get_sap_logs_plan
+    msil_iot_psm_get_sap_downtime, msil_iot_psm_get_sap_logs_plan, msil_iot_psm_get_sap_logs_filters
 )
 from app.schema.sapLogsSchema import (
     DowntimeSAPLogs, PlanSAPLogs
@@ -70,6 +70,31 @@ async def get_sap_logs_downtime(request: Request, downtime: DowntimeSAPLogs = De
         logger.error("Failed to get downtime", exc_info=True)
         logger.error(f"Error: {str(e)}")
         return JSONResponse(content={"error": "Internal Server Error"}, status_code=500)
+
+
+@router.get("/downtime/filters")
+@jwt_required
+async def get_sap_logs_downtime_filters(request: Request, downtime: DowntimeSAPLogs = Depends()):
+    try:
+        iot_shop_id = downtime.iot_shop_id
+
+        if iot_shop_id and not isinstance(iot_shop_id, str):
+            raise HTTPException(
+                status_code=400, detail="iot_shop_id must be a string."
+            )
+
+        response = msil_iot_psm_get_sap_logs_filters.get_downtime_filters_handler(
+            shop_id=iot_shop_id
+        )
+
+        if isinstance(response, dict):
+            response.pop("request", None)
+
+        return returnJsonResponse(response)
+
+    except Exception as e:
+        logger.error("Failed to get downtime filters", exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
 @router.get("/downtime/report")
@@ -219,6 +244,31 @@ async def get_sap_logs_plan(request: Request, plan: PlanSAPLogs = Depends()):
         return JSONResponse(content={"error": "Internal Server Error"}, status_code=500)
 
 
+@router.get("/plan/filters")
+@jwt_required
+async def get_sap_logs_plan_filters(request: Request, plan: PlanSAPLogs = Depends()):
+    try:
+        iot_shop_id = plan.iot_shop_id
+
+        if iot_shop_id and not isinstance(iot_shop_id, str):
+            raise HTTPException(
+                status_code=400, detail="iot_shop_id must be a string."
+            )
+
+        response = msil_iot_psm_get_sap_logs_filters.get_plan_filters_handler(
+            shop_id=iot_shop_id
+        )
+
+        if isinstance(response, dict):
+            response.pop("request", None)
+
+        return returnJsonResponse(response)
+
+    except Exception as e:
+        logger.error("Failed to get plan filters", exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
 @router.get("/plan/report")
 @jwt_required
 async def get_sap_logs_plan_report(request: Request, plan: PlanSAPLogs = Depends()):
@@ -340,4 +390,29 @@ async def get_sap_logs_plan_report(request: Request, plan: PlanSAPLogs = Depends
 
     except Exception as e:
         logger.error(f"Error generating report: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+@router.get("/production/filters")
+@jwt_required
+async def get_sap_logs_production_filters(request: Request, plan: PlanSAPLogs = Depends()):
+    try:
+        iot_shop_id = plan.iot_shop_id
+
+        if iot_shop_id and not isinstance(iot_shop_id, str):
+            raise HTTPException(
+                status_code=400, detail="iot_shop_id must be a string."
+            )
+
+        response = msil_iot_psm_get_sap_logs_filters.get_production_filters_handler(
+            shop_id=iot_shop_id
+        )
+
+        if isinstance(response, dict):
+            response.pop("request", None)
+
+        return returnJsonResponse(response)
+
+    except Exception as e:
+        logger.error("Failed to get production filters", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal Server Error")
