@@ -12,10 +12,12 @@ class SAPLogStatusEnum(str, Enum):
 
 
 class DowntimeSAPLogs(BaseModel):
+    filename: Optional[str] = Field(default=None)
     data_sent_time: Optional[datetime] = Field(default=None)
     data_sent_flag: Optional[SAPLogStatusEnum] = Field(default=None)
     sap_plant_id: Optional[int] = Field(default=None)
     sap_shop_id: Optional[str] = Field(default=None)
+    iot_shop_id: Optional[str] = Field(default=None)
     header_material: Optional[str] = Field(default=None)
     program_no: Optional[str] = Field(default=None)
     work_center: Optional[str] = Field(default=None)
