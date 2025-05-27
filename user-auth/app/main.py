@@ -31,11 +31,6 @@ async def rate_limit_exceeded_handler(request, exc):
         content={"message": "Too many requests. Please try again later."}
     )
 
-# Initialize the Prometheus Instrumentator
-instrumentator = Instrumentator()
-# Instrument your FastAPI app
-instrumentator.instrument(app).expose(app, "/metrics")
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Allows all origins (change to specific domains if needed)
@@ -51,10 +46,3 @@ app.include_router(auth.router,prefix=config.ROUTE_PREFIX, tags=["User Service"]
 @app.get("/")
 def root():
     return {"message": "Welcome to the FastAPI JWT Auth Prodigi1 Service"}
-
-# Expose Prometheus metrics at '/metrics' endpoint
-# This will be automatically handled by instrumentator
-@app.get("/metrics")
-async def metrics():
-    # Prometheus metrics will be automatically exposed
-    return JSONResponse(content={"message": "Metrics endpoint"})
