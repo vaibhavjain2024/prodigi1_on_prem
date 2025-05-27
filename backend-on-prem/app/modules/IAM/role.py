@@ -11,8 +11,9 @@ def get_role(identifier, session):
 
     user_repository = UserRepository(session)
     user_service = UserService(user_repository)
-    user = user_service.get_user_by_federation_identifier(identifier)
-    role = Role("role",user["is_super_admin"],user["is_admin"])
+    # user = user_service.get_user_by_federation_identifier(identifier)
+    user = user_service.get_user_by_federation_identifier(identifier) or user_service.get_user_by_federation_identifier("maruti\\" + identifier) or user_service.get_user_by_federation_identifier("msil-iot_maruti\\" + identifier)
+    role = Role("role", user["is_super_admin"], user["is_admin"])
     role.parse_role(user["role_permissions"])
     print(role.permissions)
     return role
