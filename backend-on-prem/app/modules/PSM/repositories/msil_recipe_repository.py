@@ -1,5 +1,6 @@
 from app.modules.PSM.repositories.models.msil_part import MSILPart
 from app.modules.PSM.repositories.models.msil_recipe import MSILRecipe
+from app.modules.PSM.repositories.models.msil_model import MSILModel
 from app.modules.PSM.repositories.models.msil_input_material import MSILInputMaterial
 from .repository import Repository
 from sqlalchemy.orm import Session
@@ -12,83 +13,84 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import aliased
 
+
 class MSILRecipeRepository(Repository):
     """
     MSILMachineRepository to manage MSILMachine data table.
     """
-    def __init__(self, session: Session ):
+
+    def __init__(self, session: Session):
         self.session = session
         self.model_type = MSILRecipe
         self.input_model = MSILInputMaterial
-    
+
     def get_input_material(self, output_part_ids, shop_id):
         scenario = ""
         with self.session:
             input_1_part = aliased(MSILPart)
             input_2_part = aliased(MSILPart)
 
-            ## one out scenarios
+            # one out scenarios
             if len(output_part_ids) == 1:
                 query = self.session.query(
-                self.model_type, 
-                input_1_part, 
-                input_2_part
-                ) \
-                .select_from(self.model_type) \
-                .filter(self.model_type.shop_id == shop_id) \
-                .filter(or_(self.model_type.output_1 == output_part_ids[0],
-                            self.model_type.output_2 == output_part_ids[0])) \
-                .join(input_1_part, input_1_part.material_code == self.model_type.input_1, isouter=True) \
-                .join(input_2_part, input_2_part.material_code == self.model_type.input_2, isouter=True) \
-                .all()
-                scenario = "ONE_OUT"
-            else:
-                ## two out scenario
-                query = self.session.query(
-                    self.model_type, 
-                    input_1_part, 
+                    self.model_type,
+                    input_1_part,
                     input_2_part
                 ) \
-                .select_from(self.model_type) \
-                .filter(self.model_type.shop_id == shop_id) \
-                .filter(or_(
-                    and_(self.model_type.output_1 == output_part_ids[0],
-                        self.model_type.output_2 == output_part_ids[1]),
-                    and_(self.model_type.output_1 == output_part_ids[1],
-                        self.model_type.output_2 == output_part_ids[0]),
-                    ),
-                 ) \
-                .join(input_1_part, input_1_part.material_code == self.model_type.input_1, isouter=True) \
-                .join(input_2_part, input_2_part.material_code == self.model_type.input_2, isouter=True) \
-                .all()
-                scenario = "TWO_OUT"
-                if query == []:
-                    ## one in one out double scenarios
-                    query = self.session.query(
-                        self.model_type, 
-                        input_1_part, 
-                        input_2_part
-                    ) \
+                    .select_from(self.model_type) \
+                    .filter(self.model_type.shop_id == shop_id) \
+                    .filter(or_(self.model_type.output_1 == output_part_ids[0],
+                            self.model_type.output_2 == output_part_ids[0])) \
+                    .join(input_1_part, input_1_part.material_code == self.model_type.input_1, isouter=True) \
+                    .join(input_2_part, input_2_part.material_code == self.model_type.input_2, isouter=True) \
+                    .all()
+                scenario = "ONE_OUT"
+            else:
+                # two out scenario
+                query = self.session.query(
+                    self.model_type,
+                    input_1_part,
+                    input_2_part
+                ) \
                     .select_from(self.model_type) \
                     .filter(self.model_type.shop_id == shop_id) \
                     .filter(or_(
                         and_(self.model_type.output_1 == output_part_ids[0],
-                            self.model_type.output_2 == None),
+                             self.model_type.output_2 == output_part_ids[1]),
                         and_(self.model_type.output_1 == output_part_ids[1],
-                            self.model_type.output_2 == None),
-                        and_(self.model_type.output_2 == output_part_ids[0],
-                            self.model_type.output_1 == None),
-                        and_(self.model_type.output_2 == output_part_ids[1],
-                            self.model_type.output_1 == None)
-                        ),
-                    ) \
+                             self.model_type.output_2 == output_part_ids[0]),
+                    ),
+                ) \
                     .join(input_1_part, input_1_part.material_code == self.model_type.input_1, isouter=True) \
                     .join(input_2_part, input_2_part.material_code == self.model_type.input_2, isouter=True) \
                     .all()
+                scenario = "TWO_OUT"
+                if query == []:
+                    # one in one out double scenarios
+                    query = self.session.query(
+                        self.model_type,
+                        input_1_part,
+                        input_2_part
+                    ) \
+                        .select_from(self.model_type) \
+                        .filter(self.model_type.shop_id == shop_id) \
+                        .filter(or_(
+                            and_(self.model_type.output_1 == output_part_ids[0],
+                                 self.model_type.output_2 == None),
+                            and_(self.model_type.output_1 == output_part_ids[1],
+                                 self.model_type.output_2 == None),
+                            and_(self.model_type.output_2 == output_part_ids[0],
+                                 self.model_type.output_1 == None),
+                            and_(self.model_type.output_2 == output_part_ids[1],
+                                 self.model_type.output_1 == None)
+                        ),
+                    ) \
+                        .join(input_1_part, input_1_part.material_code == self.model_type.input_1, isouter=True) \
+                        .join(input_2_part, input_2_part.material_code == self.model_type.input_2, isouter=True) \
+                        .all()
                     scenario = "ONE_OUT_COMBINED"
 
-            return query,scenario
-
+            return query, scenario
 
     def add_input_materials(self, input_material_data_list):
         """
@@ -114,7 +116,6 @@ class MSILRecipeRepository(Repository):
                 material_details = input_data.get('material_details')
                 material_qty = input_data.get('material_qty')
 
-                
                 # existing_entry = self.session.query(MSILInputMaterial) \
                 #     .filter(MSILInputMaterial.production_id == production_id) \
                 #     .filter(MSILInputMaterial.batch_id == batch_id) \
@@ -132,35 +133,81 @@ class MSILRecipeRepository(Repository):
                 #     # raise ValueError("Input material with the same production_id, batch_id, and part_name already exists.")
                 # else:
                 input_material = MSILInputMaterial()
-                input_material.production_id=production_id,
-                input_material.batch_id=batch_id,
-                input_material.part_name=part_name,
-                input_material.thickness=thickness,
-                input_material.width=width,
-                input_material.details=material_details,
-                input_material.material_qty=material_qty
+                input_material.production_id = production_id,
+                input_material.batch_id = batch_id,
+                input_material.part_name = part_name,
+                input_material.thickness = thickness,
+                input_material.width = width,
+                input_material.details = material_details,
+                input_material.material_qty = material_qty
                 self.add(input_material)
                 num_rows_added += 1
 
         return num_rows_added
-    
-    def recipe_combinations(self,shop_id):
-        recipe_combinations=[]
+
+    def recipe_combinations(self, shop_id):
+        recipe_combinations = []
         with self.session:
-            results = self.session.query(self.model_type).filter(self.model_type.shop_id==shop_id).all()
+            results = self.session.query(self.model_type).filter(
+                self.model_type.shop_id == shop_id).all()
             for i in results:
-                recipe_combinations.append([i.equipment_id,i.data_number,i.output_1,i.output_2])
+                recipe_combinations.append(
+                    [i.equipment_id, i.data_number, i.output_1, i.output_2])
             return recipe_combinations
-    
-    def update_recipe(self,shop_id,eqp_id,number,out_1,out_2,model):
+
+    def get_recipe_filters_by_shop(self, shop_id):
+        """
+        Fetch all recipes for a given shop_id.
+        """
+        with self.session:
+            results = self.session.query(self.model_type.equipment_id,
+                                         self.model_type.data_number,
+                                         self.model_type.data_number_description,
+                                         self.model_type.output_1) \
+                .filter(self.model_type.shop_id == shop_id) \
+                .distinct() \
+                .all()
+            recipe_filters = {}
+            for equipment_id, data_number, data_number_description, output_1 in results:
+                if equipment_id not in recipe_filters:
+                    recipe_filters[equipment_id] = {
+                        'data_numbers': {}
+                    }
+                if data_number not in recipe_filters[equipment_id]['data_numbers']:
+                    recipe_filters[equipment_id]['data_numbers'][data_number] = {
+                        'description': data_number_description,
+                        'models': []
+                    }
+                # Fetch the model from MSILPartRepository based on output_1
+                model_id_data = self.session.query(MSILPart.model_id) \
+                    .filter(MSILPart.material_code == output_1) \
+                    .distinct() \
+                    .all()
+                # Convert the result to a list of models
+                model_id_list = [m[0] for m in model_id_data]
+
+                for model_id in model_id_list:
+                    model_name_data = self.session.query(MSILModel.model_name) \
+                        .filter(MSILModel.id == model_id) \
+                        .all()
+                    if model_name_data:
+                        model_name = model_name_data[0][0]
+                        recipe_filters[equipment_id]['data_numbers'][data_number]['models'].append({
+                            'id': model_id,
+                            'name': model_name
+                        })
+
+            return recipe_filters
+
+    def update_recipe(self, shop_id, eqp_id, number, out_1, out_2, model):
         with self.session:
             result = self.session.query(self.model_type).filter_by(data_number=number,
-                                                                shop_id=shop_id,
-                                                                equipment_id=eqp_id,
-                                                                output_1=out_1,
-                                                                output_2=out_2).update(model)
+                                                                   shop_id=shop_id,
+                                                                   equipment_id=eqp_id,
+                                                                   output_1=out_1,
+                                                                   output_2=out_2).update(model)
             self.session.commit()
-    
+
     # def add_input_materials(self, input_material_data_list):
     #     """
     #     Args:
@@ -273,9 +320,7 @@ class MSILRecipeRepository(Repository):
     #                         input_material.material_qty=first_input_material['material_qty']
     #                         self.add(input_material)
     #                     num_rows_added += 1
-                        
-                        
-                
+
     #                 elif second_input_material:
     #                     existing_entries_2 = self.session.query(MSILInputMaterial) \
     #                     .filter(MSILInputMaterial.production_id == second_input_material['production_id']) \
@@ -304,7 +349,6 @@ class MSILRecipeRepository(Repository):
     #                     num_rows_added += 1
     #     return num_rows_added
 
-
     # def update_input_materials(self, input_material_updates):
 
     #     with self.session:
@@ -314,7 +358,7 @@ class MSILRecipeRepository(Repository):
     #             thickness = update_data.get('thickness')
     #             width = update_data.get('width')
     #             material_qty = update_data.get('material_qty')
-            
+
     #             if input_material_id:
     #                 query = self.session.query(MSILInputMaterial).filter(MSILInputMaterial.id == input_material_id)
 
@@ -349,13 +393,26 @@ class MSILRecipeRepository(Repository):
                     ),
                     and_(
                         self.model_type.output_1 == output_1,
-                        self.model_type.output_2.is_(None)  # Case where output_2 is NULL
+                        # Case where output_2 is NULL
+                        self.model_type.output_2.is_(None)
                     ),
                     and_(
                         self.model_type.output_1 == output_2,
-                        self.model_type.output_2.is_(None)  # Case where output_2 is NULL
+                        # Case where output_2 is NULL
+                        self.model_type.output_2.is_(None)
                     )
                 )
             ) \
                 .first()  # Fetch the first matching recipe
             return result
+
+    def get_header_material_by_shop(self, shop_id):
+        """
+        Fetch all header materials and for a given shop_id.
+        """
+        with self.session:
+            results = self.session.query(self.model_type.output_1) \
+                .filter(self.model_type.shop_id == shop_id) \
+                .distinct() \
+                .all()
+            return [result[0] for result in results]
