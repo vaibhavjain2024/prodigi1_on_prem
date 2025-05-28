@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prodigi1-batch-deployment
+  namespace: iot-pd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prodigi1-batch
+  template:
+    metadata:
+      labels:
+        app: prodigi1-batch
+    spec:
+      containers:
+      - name: prodigi1-batch
+        image: localhost:32000/prodigi1-batch-container:latest
+        ports:
+        - containerPort: 8003
+        env:
+        - name: ENV
+          value: "dev"
