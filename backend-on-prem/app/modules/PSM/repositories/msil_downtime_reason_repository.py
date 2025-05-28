@@ -58,15 +58,22 @@ class MSILDowntimeReasonRepository(Repository):
             self.session.commit()
             return True
 
-    def get_resons_by_shop(self, shop_id):
-        """Get reasons by shop_id."""
+    def get_reasons_by_shop(self, shop_id):
+        """Get reasons by shop_id and list of dicts with reason_id and reason."""
+
         with self.session:
             try:
-                result = (self.session.query(self.model_type.reason)
-                          .filter(self.model_type.shop_id == shop_id)
-                          .distinct()
-                          .all())
-                return [item[0] for item in result]
+                result = (self.session.query(
+                    self.model_type.id,
+                    self.model_type.reason
+                )
+                    .filter(self.model_type.shop_id == shop_id)
+                    .all())
+                return [
+                    {"reason_id": row.id, "reason": row.reason}
+                    for row in result
+                ] if result else []
+
             except Exception as e:
                 raise Exception(
                     f"Error fetching reasons for shop {shop_id}: {str(e)}") from e
