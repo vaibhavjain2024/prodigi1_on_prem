@@ -54,7 +54,7 @@
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from IAM.repositories.db_setup import get_session
+from .repositories.db_setup import get_session
 
 class SessionHelper:
     def __init__(self, connection_string):
@@ -62,7 +62,7 @@ class SessionHelper:
             raise ValueError("Connection string cannot be None or empty.")
         
         # Create SQLAlchemy engine
-        self.engine = create_engine(connection_string, pool_size=30)
+        self.engine = create_engine(connection_string, pool_size=100)
 
     def get_session(self):
         Session = sessionmaker(bind=self.engine)

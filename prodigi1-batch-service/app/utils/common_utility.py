@@ -35,9 +35,11 @@ async def fetch_data_from_cloud(data_url, data=None, params=None):
     }
     try:
         message = f"Fetching data from end point {data_url}"
+        print("==========",message)
         logger.info(message)
         log_to_cloudwatch("INFO", message)
         checksheet_response = requests.get(data_url, json=data, headers=headers, params=params)
+        print("***********", checksheet_response)
         logger.info(f"cloud response: {checksheet_response}")
         checksheet_records = checksheet_response.json()
         message = f"Response received:- {len(checksheet_records)}"
