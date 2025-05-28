@@ -15,19 +15,8 @@ app = FastAPI(
     openapi_url=f"{ROUTE_PREFIX}/openapi.json"
     )
 
-# Initialize the Prometheus Instrumentator
-instrumentator = Instrumentator()
-# Instrument your FastAPI app
-instrumentator.instrument(app).expose(app, "/metrics")
-
 app.include_router(sync_users.router, prefix=ROUTE_PREFIX, tags=["Sync user"])
 
 @app.get("/")
 def root():
     return {"message": "Welcome to the FastAPI Prodigi1 Batch Service"}
-
-# Expose Prometheus metrics at '/metrics' endpoint
-@app.get("/metrics")
-async def metrics():
-    # Prometheus metrics will be automatically exposed
-    return JSONResponse(content={"message": "Metrics endpoint"})

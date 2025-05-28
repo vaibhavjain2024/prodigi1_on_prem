@@ -81,7 +81,7 @@ class RoleService():
         return{
             "id": model.id,
             "name":model.name,
-            "permissions" : self.get_permissionsList(model.id, model.parent_role_id),
+            "permissions" : self.get_permissionsList(model.id,model.parent_role_id),
             "parent_role_id" : model.parent_role_id,
             "tenant":model.tenant,
             "is_admin":model.is_admin,
@@ -99,5 +99,27 @@ class RoleService():
             model.is_admin = (model_dict["is_admin"])
         if model_dict.get("is_super_admin", None) != None:
             model.is_super_admin = (model_dict["is_super_admin"])
+
+    def transform_from_model_v2(self, model, permissions):
+        return{
+            "id": model.id,
+            "name":model.name,
+            "permissions" : permissions,
+            "parent_role_id" : model.parent_role_id,
+            "tenant":model.tenant,
+            "is_admin":model.is_admin,
+            "is_super_admin":model.is_super_admin
+        }
+    
+    def get_role_and_permission_details(self, role_ids):
+        role_details_list = self.repository.get_role_by_ids(role_ids)
+        role_wise_permissions = self.permissions_service.aggregate_permission_details_by_role_ids(role_ids)
+        role_id_to_details_map = {}
+        for role_model in role_details_list:
+            role_id_to_details_map[role_model.id] = self.transform_from_model_v2(
+                role_model, role_wise_permissions[role_model.id]
+            )
+        return role_id_to_details_map
+
 
     

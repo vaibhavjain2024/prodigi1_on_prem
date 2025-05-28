@@ -62,7 +62,19 @@ class PermissionsService():
         else : 
             return None
 
-   
+    def get_role_ids_by_resource_name_and_shop_id(self,resource_name,shop_id):
+        role_ids = self.repository.get_role_ids_by_resource_name_and_shop_id(resource_name,shop_id)
+        res = []
+        for each in role_ids:
+            res.append(each[0])
+        return res
+    
+    def get_role_ids_by_resource_name_and_action(self, resource_name, action):
+        role_ids = self.repository.get_role_ids_by_resource_name_and_action(resource_name,action)
+        res = []
+        for each in role_ids:
+            res.append(each[0])
+        return res
 
     def transform_from_model(self, model):
         return{
@@ -86,3 +98,27 @@ class PermissionsService():
             model.scope = model_dict["scope"]
         if model_dict.get("action_type", None) != None:
             model.action_type = model_dict["action_type"]
+
+    def get_permissions_by_role_ids(self, role_ids, skip_tranformation = False):
+        permission_model_list = self.repository.get_permissions_by_role_ids(role_ids)
+        if skip_tranformation:
+            return permission_model_list
+        permissions_list =[]
+        for permission_model in permission_model_list :
+            permissions_list.append(self.transform_from_model(permission_model))
+        return permissions_list
+    
+    def aggregate_permission_details_by_role_ids(self, role_ids):
+        permission_model_list = self.get_permissions_by_role_ids(role_ids, True)
+        role_id_to_permission_map = {}
+        for permission_model in permission_model_list:
+            if permission_model.role_id in role_id_to_permission_map:
+                role_id_to_permission_map[permission_model.role_id].append(
+                    self.transform_from_model(permission_model)
+                )
+            else:
+                role_id_to_permission_map[permission_model.role_id] =[
+                    self.transform_from_model(permission_model)
+                ]
+        return role_id_to_permission_map
+

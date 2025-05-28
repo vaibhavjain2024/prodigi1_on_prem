@@ -1,13 +1,13 @@
 # Use the official Python image from the Docker Hub
-FROM python:3.11-slim
+FROM python:3.13-alpine
 
 # Set the working directory
 WORKDIR /app
 
 # Install system dependencies required for psycopg2
-RUN apt-get update && apt-get install -y \
-    libpq-dev gcc && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+# RUN apt-get update && apt-get install -y \
+#     libpq-dev gcc && \
+#     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy the requirements file
 COPY requirements.txt .
@@ -22,7 +22,10 @@ COPY . .
 COPY .env.* ./
 
 # Define PYTHONPATH explicitly and add the shared directory
-ENV PYTHONPATH="/app:/app/modules" 
+# ENV PYTHONPATH="/app:/app/modules" 
+
+# Pass the ENV variable
+ENV ENV=dev
 
 # Expose the port FastAPI will run on
 EXPOSE 8003

@@ -14,7 +14,7 @@ AWS_API_GATEWAY_KEY = os.getenv("AWS_API_GATEWAY_KEY","development")
 SYNC_BASE_GATEWAY_URL_LISTS = os.getenv("SYNC_BASE_GATEWAY_URL_LISTS", "").split(",")
 
 # Cloudwatch logs Configuration
-SYNC_GATEWAY_BASE_URL=os.getenv("SYNC_GATEWAY_BASE_URL","https://sruibwvkxf.execute-api.ap-south-1.amazonaws.com")
+SYNC_GATEWAY_BASE_URL=os.getenv("SYNC_GATEWAY_BASE_URL","https://xunkwvqvv7.execute-api.ap-south-1.amazonaws.com")
 SERVICE_NAME = "prodigi1-batch-service"
 IS_LOG_SEND_TO_CW = os.getenv("IS_LOG_SEND_TO_CW",False)
 LOG_GROUP_NAME="/aws/lambda/msil-iot-psm-on-prem-logs"
