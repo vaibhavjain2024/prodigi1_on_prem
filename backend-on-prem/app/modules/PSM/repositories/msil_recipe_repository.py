@@ -1,5 +1,6 @@
 from app.modules.PSM.repositories.models.msil_part import MSILPart
 from app.modules.PSM.repositories.models.msil_recipe import MSILRecipe
+from app.modules.PSM.repositories.models.msil_model import MSILModel
 from app.modules.PSM.repositories.models.msil_input_material import MSILInputMaterial
 from .repository import Repository
 from sqlalchemy.orm import Session
@@ -159,9 +160,6 @@ class MSILRecipeRepository(Repository):
         Fetch all recipes for a given shop_id.
         """
         with self.session:
-            # want to provide a nested structure in top level it will containe
-            # equipment_id and for each equipment_id it will contain data_number and data_number_description
-            # and for each data_number and it will contain output_1
             results = self.session.query(self.model_type.equipment_id,
                                          self.model_type.data_number,
                                          self.model_type.data_number_description,
@@ -178,10 +176,27 @@ class MSILRecipeRepository(Repository):
                 if data_number not in recipe_filters[equipment_id]['data_numbers']:
                     recipe_filters[equipment_id]['data_numbers'][data_number] = {
                         'description': data_number_description,
-                        'outputs': []
+                        'models': []
                     }
-                recipe_filters[equipment_id]['data_numbers'][data_number]['outputs'].append(
-                    output_1)
+                # Fetch the model from MSILPartRepository based on output_1
+                model_id_data = self.session.query(MSILPart.model_id) \
+                    .filter(MSILPart.material_code == output_1) \
+                    .distinct() \
+                    .all()
+                # Convert the result to a list of models
+                model_id_list = [m[0] for m in model_id_data]
+
+                for model_id in model_id_list:
+                    model_name_data = self.session.query(MSILModel.model_name) \
+                        .filter(MSILModel.id == model_id) \
+                        .all()
+                    if model_name_data:
+                        model_name = model_name_data[0][0]
+                        recipe_filters[equipment_id]['data_numbers'][data_number]['models'].append({
+                            'id': model_id,
+                            'name': model_name
+                        })
+
             return recipe_filters
 
     def update_recipe(self, shop_id, eqp_id, number, out_1, out_2, model):
