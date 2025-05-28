@@ -22,10 +22,18 @@ def apply_filters(query, filters):
             continue
         column_attr = getattr(DowntimeSAPLogs, field, None)
         if column_attr is not None:
-            if isinstance(value, Enum):
+            # Support comma-separated values
+            if isinstance(value, str) and "," in value:
+                values_list = [v.strip()
+                               for v in value.split(",") if v.strip()]
+                query = query.filter(column_attr.in_(values_list))
+            elif isinstance(value, list):
+                query = query.filter(column_attr.in_(value))
+            elif isinstance(value, Enum):
                 query = query.filter(column_attr == value.value)
             else:
                 query = query.filter(column_attr == value)
+
     return query
 
 
