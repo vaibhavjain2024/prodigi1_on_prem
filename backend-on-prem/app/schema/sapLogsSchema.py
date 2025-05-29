@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
@@ -28,6 +28,9 @@ class DowntimeSAPLogs(BaseModel):
     remarks: Optional[str] = Field(default=None)
     shift: Optional[str] = Field(default=None)
     inserted_at: Optional[datetime] = Field(default=None)
+
+    class Config:
+        orm_mode = True
 
 
 class PlanSAPLogs(BaseModel):
@@ -59,3 +62,46 @@ class PlanSAPLogs(BaseModel):
     iot_order_processing_status: Optional[SAPLogStatusEnum] = Field(
         default=None)
     iot_shop_id: Optional[str] = Field(default=None)
+
+    class Config:
+        orm_mode = True
+
+
+class SAPLogProductionStatusEnum(str, Enum):
+    IN_PROCESS = "IN_PROCESS"
+    SUCCESS = "SUCCESS"
+    FAILURE = "FAILURE"
+
+
+class ProductionSAPLogAttemptSchema(BaseModel):
+    id: int
+    attempt_number: int
+    attempt_time: datetime
+    status: Optional[SAPLogProductionStatusEnum]
+    error_remarks: Optional[str]
+
+    class Config:
+        orm_mode = True
+
+
+class ProductionSAPLogSchema(BaseModel):
+    id: Optional[int] = None
+    machine: Optional[str] = None
+    sap_shop_id: Optional[str] = None
+    iot_shop_id: Optional[str] = None
+    program_no: Optional[str] = None
+    program_name: Optional[str] = None
+    model: Optional[str] = None
+    shift: Optional[str] = None
+    data_capture_time: Optional[datetime] = None
+    data_update_time: Optional[datetime] = None
+    status: Optional[SAPLogProductionStatusEnum] = None
+    error_remarks: Optional[str] = None
+    batch_id: Optional[str] = None
+    attempts: List[ProductionSAPLogAttemptSchema] = []
+
+    class Config:
+        orm_mode = True
+
+    class Config:
+        orm_mode = True

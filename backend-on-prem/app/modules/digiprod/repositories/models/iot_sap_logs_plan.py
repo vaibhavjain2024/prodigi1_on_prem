@@ -10,9 +10,9 @@ from sqlalchemy import (
 
 
 class SAPPlanLogStatusEnum(enum.Enum):
-    SAVED = "Order Saved"
-    ACCEPTED = "Order Accepted"
-    REJECTED = "Order Rejected"
+    ORDER_SAVED = "ORDER_SAVED"
+    ORDER_ACCEPTED = "ORDER_ACCEPTED"
+    ORDER_REJECTED = "ORDER_REJECTED"
 
 
 class PlanSAPLogs(Base):
@@ -45,4 +45,4 @@ class PlanSAPLogs(Base):
     comp_Sloc = Column(String)
     co_product = Column(String)
     iot_order_processing_status = Column(Enum(SAPPlanLogStatusEnum))
-    iot_shop_id = Column(String)
+    iot_shop_id = Column(Integer)
