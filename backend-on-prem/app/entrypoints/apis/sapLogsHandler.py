@@ -2,10 +2,11 @@ from app.modules.common.logger_common import get_logger
 from app.utils.common_utility import returnJsonResponse
 from app.utils.auth_utility import jwt_required
 from app.onPremServices.sapLogs import (
-    msil_iot_psm_get_sap_downtime, msil_iot_psm_get_sap_logs_plan, msil_iot_psm_get_sap_logs_filters
+    msil_iot_psm_get_sap_downtime, msil_iot_psm_get_sap_logs_plan,
+    msil_iot_psm_get_sap_logs_filters, msil_iot_psm_get_sap_production
 )
 from app.schema.sapLogsSchema import (
-    DowntimeSAPLogs, PlanSAPLogs
+    DowntimeSAPLogs, PlanSAPLogs, ProductionSAPLogSchema
 )
 from datetime import datetime
 from fastapi import Request, Depends, HTTPException
@@ -36,9 +37,9 @@ async def get_sap_logs_downtime(request: Request, downtime: DowntimeSAPLogs = De
         end_time = downtime.end_time
         iot_shop_id = downtime.iot_shop_id
 
-        if iot_shop_id and not isinstance(iot_shop_id, str):
+        if not iot_shop_id:
             raise HTTPException(
-                status_code=400, detail="iot_shop_id must be a string."
+                status_code=400, detail="iot_shop_id is required."
             )
 
         if isinstance(start_time, str):
@@ -78,9 +79,9 @@ async def get_sap_logs_downtime_filters(request: Request, downtime: DowntimeSAPL
     try:
         iot_shop_id = downtime.iot_shop_id
 
-        if iot_shop_id and not isinstance(iot_shop_id, str):
+        if not iot_shop_id:
             raise HTTPException(
-                status_code=400, detail="iot_shop_id must be a string."
+                status_code=400, detail="iot_shop_id is required."
             )
 
         response = msil_iot_psm_get_sap_logs_filters.get_downtime_filters_handler(
@@ -105,9 +106,10 @@ async def get_sap_logs_downtime_report(request: Request, report_view: DowntimeSA
         end_time = report_view.end_time
         iot_shop_id = report_view.iot_shop_id
 
-        if iot_shop_id and not isinstance(iot_shop_id, str):
+        if not iot_shop_id:
             raise HTTPException(
-                status_code=400, detail="iot_shop_id must be a string.")
+                status_code=400, detail="iot_shop_id is required."
+            )
 
         if isinstance(start_time, str):
             start_time = datetime.strptime(start_time, DATETIME_FORMAT)
@@ -209,6 +211,7 @@ async def get_sap_logs_plan(request: Request, plan: PlanSAPLogs = Depends()):
     try:
         scheduled_start = plan.scheduled_start
         scheduled_finish = plan.scheduled_finish
+        iot_shop_id = plan.iot_shop_id
 
         # Convert ISO strings to datetime if needed
         if isinstance(scheduled_start, str):
@@ -217,6 +220,11 @@ async def get_sap_logs_plan(request: Request, plan: PlanSAPLogs = Depends()):
         if isinstance(scheduled_finish, str):
             scheduled_finish = datetime.strptime(
                 scheduled_finish, DATETIME_FORMAT)
+
+        if not iot_shop_id:
+            raise HTTPException(
+                status_code=400, detail="iot_shop_id is required."
+            )
 
         # Validate time range
         if scheduled_start and scheduled_finish and scheduled_start > scheduled_finish:
@@ -250,9 +258,9 @@ async def get_sap_logs_plan_filters(request: Request, plan: PlanSAPLogs = Depend
     try:
         iot_shop_id = plan.iot_shop_id
 
-        if iot_shop_id and not isinstance(iot_shop_id, str):
+        if not iot_shop_id:
             raise HTTPException(
-                status_code=400, detail="iot_shop_id must be a string."
+                status_code=400, detail="iot_shop_id is required."
             )
 
         response = msil_iot_psm_get_sap_logs_filters.get_plan_filters_handler(
@@ -275,6 +283,12 @@ async def get_sap_logs_plan_report(request: Request, plan: PlanSAPLogs = Depends
     try:
         scheduled_start = plan.scheduled_start
         scheduled_finish = plan.scheduled_finish
+        iot_shop_id = plan.iot_shop_id
+
+        if not iot_shop_id:
+            raise HTTPException(
+                status_code=400, detail="iot_shop_id is required."
+            )
 
         if isinstance(scheduled_start, str):
             scheduled_start = datetime.strptime(
@@ -399,9 +413,9 @@ async def get_sap_logs_production_filters(request: Request, plan: PlanSAPLogs = 
     try:
         iot_shop_id = plan.iot_shop_id
 
-        if iot_shop_id and not isinstance(iot_shop_id, str):
+        if not iot_shop_id:
             raise HTTPException(
-                status_code=400, detail="iot_shop_id must be a string."
+                status_code=400, detail="iot_shop_id is required."
             )
 
         response = msil_iot_psm_get_sap_logs_filters.get_production_filters_handler(
@@ -416,3 +430,47 @@ async def get_sap_logs_production_filters(request: Request, plan: PlanSAPLogs = 
     except Exception as e:
         logger.error("Failed to get production filters", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+@router.get("/production")
+@jwt_required
+async def get_sap_logs_production(request: Request, production: ProductionSAPLogSchema = Depends()):
+    try:
+        iot_shop_id = production.iot_shop_id
+        # how do i read start_time and end_time sent as query parms to endpoint
+        start_time = production.data_capture_time
+        end_time = production.data_update_time
+
+        if not iot_shop_id:
+            raise HTTPException(
+                status_code=400, detail="iot_shop_id is required."
+            )
+
+        if isinstance(start_time, str):
+            start_time = datetime.strptime(start_time, DATETIME_FORMAT)
+        if isinstance(end_time, str):
+            end_time = datetime.strptime(end_time, DATETIME_FORMAT)
+
+        if start_time and end_time and start_time > end_time:
+            raise HTTPException(
+                status_code=400, detail="start_time should be less than end_time"
+            )
+
+        # Extract filters excluding already extracted ones, start_time and end_time
+        query_params = production.model_dump(
+            exclude={"start_time", "end_time"}, exclude_none=True
+        )
+
+        # Service layer handler called with filters
+        response = msil_iot_psm_get_sap_production.handler(
+            start_time, end_time, request, **query_params
+        )
+
+        return returnJsonResponse(response)
+
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        logger.error("Failed to get production logs", exc_info=True)
+        logger.error(f"Error: {str(e)}")
+        return JSONResponse(content={"error": "Internal Server Error"}, status_code=500)

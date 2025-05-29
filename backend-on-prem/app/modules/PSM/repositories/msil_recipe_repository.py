@@ -167,36 +167,50 @@ class MSILRecipeRepository(Repository):
                 .filter(self.model_type.shop_id == shop_id) \
                 .distinct() \
                 .all()
-            recipe_filters = {}
-            for equipment_id, data_number, data_number_description, output_1 in results:
-                if equipment_id not in recipe_filters:
-                    recipe_filters[equipment_id] = {
-                        'data_numbers': {}
+            recipe_filters = []
+            for result in results:
+                machine_name = result.equipment_id
+                program_no = result.data_number
+                program_name = result.data_number_description
+                output_1 = result.output_1
+
+                # Check if the machine already exists in the recipe_filters
+                machine = next(
+                    (m for m in recipe_filters if m['machine_name'] == machine_name), None)
+
+                if not machine:
+                    # If not, create a new entry for the machine
+                    machine = {
+                        'machine_name': machine_name,
+                        'program': []
                     }
-                if data_number not in recipe_filters[equipment_id]['data_numbers']:
-                    recipe_filters[equipment_id]['data_numbers'][data_number] = {
-                        'description': data_number_description,
+                    recipe_filters.append(machine)
+
+                # Check if the program already exists in the machine's program list
+                program = next(
+                    (p for p in machine['program'] if p['program_no'] == program_no), None)
+
+                if not program:
+                    # If not, create a new entry for the program
+                    program = {
+                        'program_no': program_no,
+                        'program_name': program_name,
                         'models': []
                     }
-                # Fetch the model from MSILPartRepository based on output_1
-                model_id_data = self.session.query(MSILPart.model_id) \
+                    machine['program'].append(program)
+
+                model_data = self.session.query(MSILPart.model_id, MSILModel.model_name) \
+                    .join(MSILModel, MSILPart.model_id == MSILModel.id) \
                     .filter(MSILPart.material_code == output_1) \
+                    .filter(MSILPart.shop_id == shop_id) \
                     .distinct() \
                     .all()
-                # Convert the result to a list of models
-                model_id_list = [m[0] for m in model_id_data]
-
-                for model_id in model_id_list:
-                    model_name_data = self.session.query(MSILModel.model_name) \
-                        .filter(MSILModel.id == model_id) \
-                        .all()
-                    if model_name_data:
-                        model_name = model_name_data[0][0]
-                        recipe_filters[equipment_id]['data_numbers'][data_number]['models'].append({
-                            'id': model_id,
-                            'name': model_name
-                        })
-
+                for model_id, model_name in model_data:
+                    model = {
+                        'id': model_id,
+                        'name': model_name
+                    }
+                    program['models'].append(model)
             return recipe_filters
 
     def update_recipe(self, shop_id, eqp_id, number, out_1, out_2, model):
